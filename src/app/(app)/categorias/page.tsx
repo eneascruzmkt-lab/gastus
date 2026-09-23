@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
@@ -13,30 +15,13 @@ interface Category {
 }
 
 export default function CategoriasPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: categories = [], isLoading: loading, mutate } = useSWR<Category[]>("/api/categorias", fetcher);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  const fetchCategories = useCallback(async () => {
-    try {
-      const res = await fetch("/api/categorias");
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
   function openCreate() {
     setEditingCategory(null);
@@ -77,7 +62,7 @@ export default function CategoriasPage() {
       setModalOpen(false);
       setName("");
       setEditingCategory(null);
-      await fetchCategories();
+      await mutate();
     } finally {
       setSubmitting(false);
     }
@@ -93,7 +78,7 @@ export default function CategoriasPage() {
       });
       setDeleteModalOpen(false);
       setDeletingCategory(null);
-      await fetchCategories();
+      await mutate();
     } finally {
       setSubmitting(false);
     }

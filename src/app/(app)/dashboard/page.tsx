@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 import { SummaryCards } from "@/components/summary-cards";
 import { ExpenseList } from "@/components/expense-list";
 import { EvolutionChart } from "@/components/evolution-chart";
@@ -24,24 +25,7 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchDashboard = useCallback(async () => {
-    try {
-      const res = await fetch("/api/dashboard");
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchDashboard();
-  }, [fetchDashboard]);
+  const { data, isLoading: loading, mutate } = useSWR<DashboardData>("/api/dashboard", fetcher);
 
   async function handlePay(expenseId: string, value: number) {
     const res = await fetch("/api/pagamentos", {
@@ -51,7 +35,7 @@ export default function DashboardPage() {
     });
 
     if (res.ok) {
-      await fetchDashboard();
+      await mutate();
     }
   }
 

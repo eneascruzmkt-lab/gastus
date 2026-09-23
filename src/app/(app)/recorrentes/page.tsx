@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
@@ -23,9 +25,9 @@ interface Expense {
 }
 
 export default function RecorrentesPage() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: expenses = [], isLoading: loadingExp, mutate: mutateExp } = useSWR<Expense[]>("/api/gastos?type=RECURRING", fetcher);
+  const { data: categories = [], isLoading: loadingCats } = useSWR<Category[]>("/api/categorias", fetcher);
+  const loading = loadingExp || loadingCats;
   const [modalOpen, setModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
@@ -36,23 +38,6 @@ export default function RecorrentesPage() {
   const [totalValue, setTotalValue] = useState("");
   const [dueDay, setDueDay] = useState("");
   const [categoryId, setCategoryId] = useState("");
-
-  const fetchData = useCallback(async () => {
-    try {
-      const [expRes, catRes] = await Promise.all([
-        fetch("/api/gastos?type=RECURRING"),
-        fetch("/api/categorias"),
-      ]);
-      if (expRes.ok) setExpenses(await expRes.json());
-      if (catRes.ok) setCategories(await catRes.json());
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   function resetForm() {
     setName("");
@@ -79,7 +64,7 @@ export default function RecorrentesPage() {
       });
       setModalOpen(false);
       resetForm();
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
@@ -96,7 +81,7 @@ export default function RecorrentesPage() {
       });
       setCancelModalOpen(false);
       setSelectedExpense(null);
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }

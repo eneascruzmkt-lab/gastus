@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
@@ -43,9 +45,9 @@ function currentMonth(): string {
 }
 
 export default function DevendoPage() {
-  const [debts, setDebts] = useState<Debt[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: debts = [], isLoading: loadingDebts, mutate: mutateDebts } = useSWR<Debt[]>("/api/gastos?type=SELF_DEBT", fetcher);
+  const { data: categories = [], isLoading: loadingCats } = useSWR<Category[]>("/api/categorias", fetcher);
+  const loading = loadingDebts || loadingCats;
   const [submitting, setSubmitting] = useState(false);
 
   // Create modal
@@ -63,23 +65,6 @@ export default function DevendoPage() {
   // Delete modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Debt | null>(null);
-
-  const fetchData = useCallback(async () => {
-    try {
-      const [debtsRes, catsRes] = await Promise.all([
-        fetch("/api/gastos?type=SELF_DEBT"),
-        fetch("/api/categorias"),
-      ]);
-      if (debtsRes.ok) setDebts(await debtsRes.json());
-      if (catsRes.ok) setCategories(await catsRes.json());
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   function resetCreateForm() {
     setName("");
@@ -117,7 +102,7 @@ export default function DevendoPage() {
       }
       setCreateModalOpen(false);
       resetCreateForm();
-      await fetchData();
+      await mutateDebts();
     } finally {
       setSubmitting(false);
     }
@@ -140,7 +125,7 @@ export default function DevendoPage() {
       setReporModalOpen(false);
       setSelectedDebt(null);
       setReporValue("");
-      await fetchData();
+      await mutateDebts();
     } finally {
       setSubmitting(false);
     }
@@ -153,7 +138,7 @@ export default function DevendoPage() {
       await fetch(`/api/gastos/${deleteTarget.id}`, { method: "DELETE" });
       setDeleteModalOpen(false);
       setDeleteTarget(null);
-      await fetchData();
+      await mutateDebts();
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
@@ -27,9 +29,9 @@ interface Expense {
 }
 
 export default function ParcelasPage() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: expenses = [], isLoading: loadingExp, mutate: mutateExp } = useSWR<Expense[]>("/api/gastos?type=INSTALLMENT", fetcher);
+  const { data: categories = [], isLoading: loadingCats } = useSWR<Category[]>("/api/categorias", fetcher);
+  const loading = loadingExp || loadingCats;
   const [modalOpen, setModalOpen] = useState(false);
   const [adiantarModalOpen, setAdiantarModalOpen] = useState(false);
   const [adiarModalOpen, setAdiarModalOpen] = useState(false);
@@ -39,40 +41,28 @@ export default function ParcelasPage() {
 
   // Form fields
   const [name, setName] = useState("");
-  const [totalValue, setTotalValue] = useState("");
+  const [installmentValueInput, setInstallmentValueInput] = useState("");
+  const [currentInstallment, setCurrentInstallment] = useState("");
   const [totalInstallments, setTotalInstallments] = useState("");
-  const [startDate, setStartDate] = useState("");
   const [dueDay, setDueDay] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [adiantarQty, setAdiantarQty] = useState("1");
 
-  const installmentValue =
-    Number(totalValue) && Number(totalInstallments)
-      ? Number(totalValue) / Number(totalInstallments)
+  const totalValue =
+    Number(installmentValueInput) && Number(totalInstallments)
+      ? Number(installmentValueInput) * Number(totalInstallments)
       : 0;
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [expRes, catRes] = await Promise.all([
-        fetch("/api/gastos?type=INSTALLMENT"),
-        fetch("/api/categorias"),
-      ]);
-      if (expRes.ok) setExpenses(await expRes.json());
-      if (catRes.ok) setCategories(await catRes.json());
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  const remainingCalc =
+    Number(totalInstallments) && Number(currentInstallment)
+      ? Number(totalInstallments) - Number(currentInstallment) + 1
+      : 0;
 
   function resetForm() {
     setName("");
-    setTotalValue("");
+    setInstallmentValueInput("");
+    setCurrentInstallment("");
     setTotalInstallments("");
-    setStartDate("");
     setDueDay("");
     setCategoryId("");
   }
@@ -82,24 +72,54 @@ export default function ParcelasPage() {
     if (submitting) return;
     setSubmitting(true);
     try {
-      await fetch("/api/gastos", {
+      // Calcular data de início baseado na parcela atual
+      // Se está na parcela 2 de 6, já pagou 1, então começou 1 mês atrás
+      const paidCount = Number(currentInstallment) - 1;
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - paidCount);
+      startDate.setDate(1);
+
+      const res = await fetch("/api/gastos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "INSTALLMENT",
           name: name.trim(),
-          totalValue: Number(totalValue),
-          installmentValue,
+          totalValue,
+          installmentValue: Number(installmentValueInput),
           totalInstallments: Number(totalInstallments),
-          remainingInstallments: Number(totalInstallments),
-          startDate,
+          remainingInstallments: remainingCalc,
+          startDate: startDate.toISOString(),
           dueDay: Number(dueDay),
           categoryId,
         }),
       });
+
+      if (!res.ok) {
+        const text = await res.text();
+        try { alert(JSON.parse(text).error); } catch { alert("Erro ao criar parcela"); }
+        return;
+      }
+
+      // Registrar parcelas já pagas
+      const expense = await res.json();
+      for (let i = 0; i < paidCount; i++) {
+        const payMonth = new Date(startDate);
+        payMonth.setMonth(payMonth.getMonth() + i);
+        const refMonth = `${payMonth.getFullYear()}-${String(payMonth.getMonth() + 1).padStart(2, "0")}`;
+        await fetch("/api/pagamentos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            expenseId: expense.id,
+            value: Number(installmentValueInput),
+            referenceMonth: refMonth,
+          }),
+        });
+      }
       setModalOpen(false);
       resetForm();
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
@@ -117,7 +137,7 @@ export default function ParcelasPage() {
       setAdiantarModalOpen(false);
       setSelectedExpense(null);
       setAdiantarQty("1");
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
@@ -132,7 +152,7 @@ export default function ParcelasPage() {
       });
       setAdiarModalOpen(false);
       setSelectedExpense(null);
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
@@ -147,7 +167,7 @@ export default function ParcelasPage() {
       });
       setDeleteModalOpen(false);
       setSelectedExpense(null);
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
@@ -256,38 +276,46 @@ export default function ParcelasPage() {
             required
           />
           <Input
-            label="Valor total"
+            label="Valor da parcela"
             type="number"
             step="0.01"
             min="0.01"
-            value={totalValue}
-            onChange={(e) => setTotalValue(e.target.value)}
+            value={installmentValueInput}
+            onChange={(e) => setInstallmentValueInput(e.target.value)}
+            placeholder="Ex: 290,74"
             required
           />
-          <Input
-            label="Nº de parcelas"
-            type="number"
-            min="1"
-            value={totalInstallments}
-            onChange={(e) => setTotalInstallments(e.target.value)}
-            required
-          />
-          {installmentValue > 0 && (
-            <p className="text-sm text-veridian-600 dark:text-veridian-400 font-medium">
-              Valor da parcela:{" "}
-              {installmentValue.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </p>
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Parcela atual"
+              type="number"
+              min="1"
+              max={totalInstallments || undefined}
+              value={currentInstallment}
+              onChange={(e) => setCurrentInstallment(e.target.value)}
+              placeholder="Ex: 2"
+              required
+            />
+            <Input
+              label="Total de parcelas"
+              type="number"
+              min="1"
+              value={totalInstallments}
+              onChange={(e) => setTotalInstallments(e.target.value)}
+              placeholder="Ex: 6"
+              required
+            />
+          </div>
+          {remainingCalc > 0 && totalValue > 0 && (
+            <div className="text-sm space-y-1">
+              <p className="text-veridian-600 dark:text-veridian-400 font-medium">
+                Valor total: {totalValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </p>
+              <p className="text-gray-500 dark:text-gray-400">
+                Faltam {remainingCalc} parcela(s) de {Number(totalInstallments)}
+              </p>
+            </div>
           )}
-          <Input
-            label="Data da 1ª parcela"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-          />
           <Input
             label="Dia do vencimento"
             type="number"
@@ -295,6 +323,7 @@ export default function ParcelasPage() {
             max="31"
             value={dueDay}
             onChange={(e) => setDueDay(e.target.value)}
+            placeholder="Ex: 10"
             required
           />
           <Select

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
@@ -41,9 +43,9 @@ const monthOptions = [
 ];
 
 export default function FixosPage() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: expenses = [], isLoading: loadingExp, mutate: mutateExp } = useSWR<Expense[]>("/api/gastos?type=ONE_TIME", fetcher);
+  const { data: categories = [], isLoading: loadingCats } = useSWR<Category[]>("/api/categorias", fetcher);
+  const loading = loadingExp || loadingCats;
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -57,23 +59,6 @@ export default function FixosPage() {
   const [dueMonth, setDueMonth] = useState("");
   const [repeatsYearly, setRepeatsYearly] = useState(false);
   const [categoryId, setCategoryId] = useState("");
-
-  const fetchData = useCallback(async () => {
-    try {
-      const [expRes, catRes] = await Promise.all([
-        fetch("/api/gastos?type=ONE_TIME"),
-        fetch("/api/categorias"),
-      ]);
-      if (expRes.ok) setExpenses(await expRes.json());
-      if (catRes.ok) setCategories(await catRes.json());
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   function resetForm() {
     setName("");
@@ -115,7 +100,7 @@ export default function FixosPage() {
       });
       setModalOpen(false);
       resetForm();
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
@@ -141,7 +126,7 @@ export default function FixosPage() {
       setEditModalOpen(false);
       setSelectedExpense(null);
       resetForm();
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
@@ -156,7 +141,7 @@ export default function FixosPage() {
       });
       setDeleteModalOpen(false);
       setSelectedExpense(null);
-      await fetchData();
+      await mutateExp();
     } finally {
       setSubmitting(false);
     }
