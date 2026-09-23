@@ -26,7 +26,7 @@ export function FreedomAlert({ freedomAlerts }: FreedomAlertProps) {
             className="text-veridian-600 dark:text-veridian-400"
           >
             <strong>{alert.name}</strong> acabou! {formatBRL(alert.freedValue)}
-            /mes a menos
+            /mês a menos
           </p>
         ))}
       </div>
