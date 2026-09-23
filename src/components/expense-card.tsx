@@ -153,7 +153,7 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
 
         {/* Action buttons */}
         {children && (
-          <div className="flex items-center gap-1 shrink-0">{children}</div>
+          <div className="flex items-center gap-1 shrink-0 flex-wrap">{children}</div>
         )}
       </div>
     </div>

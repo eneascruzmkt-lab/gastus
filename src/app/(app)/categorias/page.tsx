@@ -86,7 +86,7 @@ export default function CategoriasPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-0 justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           Categorias
         </h1>
