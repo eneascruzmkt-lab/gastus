@@ -44,6 +44,8 @@ export default function ParcelasPage() {
   const [editName, setEditName] = useState("");
   const [editDueDay, setEditDueDay] = useState("");
   const [editCategoryId, setEditCategoryId] = useState("");
+  const [editTotalInstallments, setEditTotalInstallments] = useState("");
+  const [editCurrentInstallment, setEditCurrentInstallment] = useState("");
 
   // Form fields
   const [name, setName] = useState("");
@@ -139,6 +141,10 @@ export default function ParcelasPage() {
     setEditName(expense.name);
     setEditDueDay(String(expense.dueDay));
     setEditCategoryId(expense.category?.id || "");
+    setEditTotalInstallments(String(expense.totalInstallments || ""));
+    // Parcela atual = total - restantes + 1
+    const current = (expense.totalInstallments || 0) - (expense.remainingInstallments || 0) + 1;
+    setEditCurrentInstallment(String(current));
     setEditModalOpen(true);
   }
 
@@ -147,14 +153,37 @@ export default function ParcelasPage() {
     if (!selectedExpense || submitting) return;
     setSubmitting(true);
     try {
+      const newTotal = Number(editTotalInstallments);
+      const newCurrent = Number(editCurrentInstallment);
+      const oldTotal = selectedExpense.totalInstallments || 0;
+      const oldCurrent = oldTotal - (selectedExpense.remainingInstallments || 0) + 1;
+      const parcelasChanged = newTotal !== oldTotal || newCurrent !== oldCurrent;
+
+      const body: any = {
+        name: editName.trim(),
+        dueDay: Number(editDueDay),
+        categoryId: editCategoryId,
+      };
+
+      // Só recalcula parcelas se o usuário realmente mudou os valores
+      if (parcelasChanged) {
+        const newRemaining = newTotal - newCurrent + 1;
+        const installmentVal = selectedExpense.installmentValue || 0;
+        const paidCount = newCurrent - 1;
+        const newStartDate = new Date();
+        newStartDate.setMonth(newStartDate.getMonth() + 1 - paidCount);
+        newStartDate.setDate(1);
+
+        body.totalInstallments = newTotal;
+        body.remainingInstallments = newRemaining;
+        body.totalValue = installmentVal * newTotal;
+        body.startDate = newStartDate.toISOString();
+      }
+
       await fetch(`/api/gastos/${selectedExpense.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: editName.trim(),
-          dueDay: Number(editDueDay),
-          categoryId: editCategoryId,
-        }),
+        body: JSON.stringify(body),
       });
       setEditModalOpen(false);
       setSelectedExpense(null);
@@ -304,9 +333,34 @@ export default function ParcelasPage() {
               </h2>
               {inactiveExpenses.map((expense) => (
                 <ExpenseCard key={expense.id} expense={expense as any}>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 font-medium">
-                    Finalizada
-                  </span>
+                  <button
+                    onClick={async () => {
+                      await fetch(`/api/gastos/${expense.id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ active: true, remainingInstallments: 1 }),
+                      });
+                      await mutateExp();
+                    }}
+                    className="text-xs px-3 py-1 rounded-lg bg-veridian-500 text-white hover:bg-veridian-600 transition-colors"
+                    title="Reativar com 1 parcela restante"
+                  >
+                    Reativar
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedExpense(expense);
+                      setDeleteModalOpen(true);
+                    }}
+                    className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    title="Excluir"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6h18" />
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                  </button>
                 </ExpenseCard>
               ))}
             </>
@@ -396,12 +450,36 @@ export default function ParcelasPage() {
       {/* Modal: Editar */}
       <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title="Editar parcela">
         <form onSubmit={handleEdit} className="space-y-4">
+          {selectedExpense && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Editando: {selectedExpense.name} ({selectedExpense.installmentValue?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/mês, {selectedExpense.remainingInstallments} restante(s))
+            </p>
+          )}
           <Input
             label="Nome"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             required
           />
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Parcela atual"
+              type="number"
+              min="1"
+              max={editTotalInstallments || undefined}
+              value={editCurrentInstallment}
+              onChange={(e) => setEditCurrentInstallment(e.target.value)}
+              required
+            />
+            <Input
+              label="Total de parcelas"
+              type="number"
+              min="1"
+              value={editTotalInstallments}
+              onChange={(e) => setEditTotalInstallments(e.target.value)}
+              required
+            />
+          </div>
           <Input
             label="Dia do vencimento"
             type="number"

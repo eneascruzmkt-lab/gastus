@@ -13,6 +13,7 @@ interface Expense {
   installmentValue?: number | null;
   totalInstallments?: number | null;
   remainingInstallments?: number | null;
+  startDate?: string | null;
   dueDay: number;
   dueMonth?: number | null;
   repeatsYearly?: boolean;
@@ -34,8 +35,19 @@ function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function isLastOnNextBill(expense: Expense): boolean {
+  if (expense.type !== "INSTALLMENT" || expense.remainingInstallments !== 1) return false;
+  if (!expense.startDate || !expense.totalInstallments) return false;
+  const start = new Date(expense.startDate);
+  const lastMonth = new Date(start.getFullYear(), start.getMonth() + expense.totalInstallments - 1, 1);
+  const now = new Date();
+  const nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  return lastMonth.getFullYear() === nextBill.getFullYear() && lastMonth.getMonth() === nextBill.getMonth();
+}
+
 export function ExpenseCard({ expense, children }: ExpenseCardProps) {
   const inactive = !expense.active;
+  const finalizesNextBill = !inactive && isLastOnNextBill(expense);
 
   return (
     <div
@@ -77,18 +89,29 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
                   style={{
                     width: `${
                       expense.totalInstallments
-                        ? ((expense.totalInstallments - (expense.remainingInstallments ?? 0)) /
-                            expense.totalInstallments) *
-                          100
+                        ? Math.min(
+                            ((expense.totalInstallments - (expense.remainingInstallments ?? 0) + ((expense.remainingInstallments ?? 0) > 0 ? 1 : 0)) /
+                              expense.totalInstallments) *
+                              100,
+                            100
+                          )
                         : 0
                     }%`,
                   }}
                 />
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {(expense.totalInstallments ?? 0) - (expense.remainingInstallments ?? 0)} de{" "}
-                {expense.totalInstallments} parcelas pagas
+                Parcela{" "}
+                {(expense.remainingInstallments ?? 0) === 0
+                  ? expense.totalInstallments
+                  : (expense.totalInstallments ?? 0) - (expense.remainingInstallments ?? 0) + 1}{" "}
+                de {expense.totalInstallments}
               </p>
+              {finalizesNextBill && (
+                <p className="text-xs font-medium text-veridian-600 dark:text-veridian-400 mt-1">
+                  Finaliza na próxima fatura
+                </p>
+              )}
             </div>
           )}
 

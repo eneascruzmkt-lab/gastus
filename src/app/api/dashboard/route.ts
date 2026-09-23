@@ -202,6 +202,7 @@ export async function GET() {
   }, 0);
 
   return NextResponse.json({
+    refMonth,
     items,
     summary: { totalToPay, totalPaid, dueCount },
     projection,

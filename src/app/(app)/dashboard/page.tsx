@@ -17,11 +17,22 @@ interface DashboardItem {
 }
 
 interface DashboardData {
+  refMonth: string;
   items: DashboardItem[];
   summary: { totalToPay: number; totalPaid: number; dueCount: number };
   projection: { month: string; total: number }[];
   freedomAlerts: { name: string; freedValue: number }[];
   selfDebtTotal: number;
+}
+
+const monthNames = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
+function formatRefMonth(refMonth: string): string {
+  const [year, month] = refMonth.split("-").map(Number);
+  return `${monthNames[month - 1]} ${year}`;
 }
 
 export default function DashboardPage() {
@@ -74,9 +85,14 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-        Dashboard
-      </h1>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Dashboard
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Fatura de {formatRefMonth(data.refMonth)}
+        </p>
+      </div>
 
       <FreedomAlert freedomAlerts={data.freedomAlerts} />
 
