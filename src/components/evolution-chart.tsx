@@ -41,7 +41,7 @@ export function EvolutionChart({ projection }: EvolutionChartProps) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-        Projecao de gastos
+        Projeção de gastos
       </h2>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={data}>

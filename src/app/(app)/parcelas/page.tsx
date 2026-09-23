@@ -33,11 +33,17 @@ export default function ParcelasPage() {
   const { data: categories = [], isLoading: loadingCats } = useSWR<Category[]>("/api/categorias", fetcher);
   const loading = loadingExp || loadingCats;
   const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [adiantarModalOpen, setAdiantarModalOpen] = useState(false);
   const [adiarModalOpen, setAdiarModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Edit fields
+  const [editName, setEditName] = useState("");
+  const [editDueDay, setEditDueDay] = useState("");
+  const [editCategoryId, setEditCategoryId] = useState("");
 
   // Form fields
   const [name, setName] = useState("");
@@ -72,11 +78,14 @@ export default function ParcelasPage() {
     if (submitting) return;
     setSubmitting(true);
     try {
-      // Calcular data de início baseado na parcela atual
-      // Se está na parcela 2 de 6, já pagou 1, então começou 1 mês atrás
+      // A fatura que você vê hoje é a do mês que vem
+      // Ex: em setembro, a fatura mostra outubro
+      // Se está na parcela 2 de 6, a parcela 2 é de outubro
+      // Então a parcela 1 foi em setembro, e o início é setembro
+      // startDate = próximo mês - (parcela atual - 1)
       const paidCount = Number(currentInstallment) - 1;
       const startDate = new Date();
-      startDate.setMonth(startDate.getMonth() - paidCount);
+      startDate.setMonth(startDate.getMonth() + 1 - paidCount);
       startDate.setDate(1);
 
       const res = await fetch("/api/gastos", {
@@ -119,6 +128,36 @@ export default function ParcelasPage() {
       }
       setModalOpen(false);
       resetForm();
+      await mutateExp();
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function openEdit(expense: Expense) {
+    setSelectedExpense(expense);
+    setEditName(expense.name);
+    setEditDueDay(String(expense.dueDay));
+    setEditCategoryId(expense.category?.id || "");
+    setEditModalOpen(true);
+  }
+
+  async function handleEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedExpense || submitting) return;
+    setSubmitting(true);
+    try {
+      await fetch(`/api/gastos/${selectedExpense.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editName.trim(),
+          dueDay: Number(editDueDay),
+          categoryId: editCategoryId,
+        }),
+      });
+      setEditModalOpen(false);
+      setSelectedExpense(null);
       await mutateExp();
     } finally {
       setSubmitting(false);
@@ -202,6 +241,16 @@ export default function ParcelasPage() {
         <div className="space-y-3">
           {activeExpenses.map((expense) => (
             <ExpenseCard key={expense.id} expense={expense as any}>
+              <button
+                onClick={() => openEdit(expense)}
+                className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                title="Editar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </button>
               <button
                 onClick={() => {
                   setSelectedExpense(expense);
@@ -335,6 +384,42 @@ export default function ParcelasPage() {
           />
           <div className="flex justify-end gap-3">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Salvando..." : "Salvar"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal: Editar */}
+      <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title="Editar parcela">
+        <form onSubmit={handleEdit} className="space-y-4">
+          <Input
+            label="Nome"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            required
+          />
+          <Input
+            label="Dia do vencimento"
+            type="number"
+            min="1"
+            max="31"
+            value={editDueDay}
+            onChange={(e) => setEditDueDay(e.target.value)}
+            required
+          />
+          <Select
+            label="Categoria"
+            options={categoryOptions}
+            value={editCategoryId}
+            onChange={(e) => setEditCategoryId(e.target.value)}
+            required
+          />
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="secondary" onClick={() => setEditModalOpen(false)}>
               Cancelar
             </Button>
             <Button type="submit" disabled={submitting}>

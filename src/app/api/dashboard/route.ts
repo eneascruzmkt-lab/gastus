@@ -109,10 +109,22 @@ export async function GET() {
     (i) => i.status === "pendente" || i.status === "atrasado"
   ).length;
 
-  // Projection: next 12 months
+  // Projection: from January of current year until last installment ends
+  // Find the latest end month among all installments
+  let lastEndDate = new Date(refYear, 11, 1); // default: December of current year
+  for (const expense of allExpenses) {
+    if (expense.type === "INSTALLMENT" && expense.startDate && expense.totalInstallments) {
+      const endDate = addMonths(expense.startDate, expense.totalInstallments - 1);
+      if (endDate > lastEndDate) lastEndDate = endDate;
+    }
+  }
+
+  const projStartDate = new Date(refYear, 0, 1); // January of current year
+  const totalProjMonths = (lastEndDate.getFullYear() - refYear) * 12 + lastEndDate.getMonth() + 1;
+
   const projection: { month: string; total: number }[] = [];
-  for (let offset = 0; offset < 12; offset++) {
-    const projDate = addMonths(new Date(refYear, refMonthNum - 1, 1), offset);
+  for (let offset = 0; offset < totalProjMonths; offset++) {
+    const projDate = addMonths(projStartDate, offset);
     const projMonth = format(projDate, "yyyy-MM");
     const projMonthNum = projDate.getMonth() + 1;
     let total = 0;

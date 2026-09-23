@@ -20,9 +20,9 @@ export function FreedomAlert({ freedomAlerts }: FreedomAlertProps) {
         Parcela finalizada!
       </h3>
       <div className="space-y-1">
-        {freedomAlerts.map((alert) => (
+        {freedomAlerts.map((alert, index) => (
           <p
-            key={alert.name}
+            key={`${alert.name}-${index}`}
             className="text-veridian-600 dark:text-veridian-400"
           >
             <strong>{alert.name}</strong> acabou! {formatBRL(alert.freedValue)}
