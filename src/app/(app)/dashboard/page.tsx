@@ -53,10 +53,10 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text mb-6">
           Dashboard
         </h1>
-        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
+        <p className="text-gray-500 dark:text-gastus-text-secondary">Carregando...</p>
       </div>
     );
   }
@@ -64,10 +64,10 @@ export default function DashboardPage() {
   if (!data) {
     return (
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text mb-6">
           Dashboard
         </h1>
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gastus-text-secondary">
           Erro ao carregar dados.
         </p>
       </div>
@@ -86,10 +86,10 @@ export default function DashboardPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           Dashboard
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500 dark:text-gastus-text-secondary">
           Fatura de {formatRefMonth(data.refMonth)}
         </p>
       </div>

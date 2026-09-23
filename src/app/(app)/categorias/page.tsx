@@ -87,16 +87,16 @@ export default function CategoriasPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           Categorias
         </h1>
         <Button onClick={openCreate}>Nova categoria</Button>
       </div>
 
       {loading ? (
-        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
+        <p className="text-gray-500 dark:text-gastus-text-secondary">Carregando...</p>
       ) : categories.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gastus-text-secondary">
           Nenhuma categoria encontrada.
         </p>
       ) : (
@@ -104,10 +104,10 @@ export default function CategoriasPage() {
           {categories.map((category) => (
             <div
               key={category.id}
-              className="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
+              className="flex items-center justify-between p-4 rounded-xl bg-gastus-light-card dark:bg-gastus-card border border-gastus-light-border dark:border-gastus-border"
             >
               <div className="flex items-center gap-3">
-                <span className="font-medium text-gray-900 dark:text-gray-100">
+                <span className="font-medium text-gray-900 dark:text-gastus-text">
                   {category.name}
                 </span>
                 {category.predefined && (
@@ -121,7 +121,7 @@ export default function CategoriasPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => openEdit(category)}
-                    className="p-2 rounded-lg text-gray-500 hover:text-veridian-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="p-2 rounded-lg text-gray-500 hover:text-veridian-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                     title="Editar"
                   >
                     <svg
@@ -141,7 +141,7 @@ export default function CategoriasPage() {
                   </button>
                   <button
                     onClick={() => openDelete(category)}
-                    className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                     title="Excluir"
                   >
                     <svg
@@ -203,7 +203,7 @@ export default function CategoriasPage() {
         onClose={() => setDeleteModalOpen(false)}
         title="Excluir categoria"
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
+        <p className="text-gray-700 dark:text-gastus-text-secondary mb-4">
           Tem certeza que deseja excluir a categoria{" "}
           <strong>{deletingCategory?.name}</strong>? As despesas vinculadas
           serão movidas para "Outros".

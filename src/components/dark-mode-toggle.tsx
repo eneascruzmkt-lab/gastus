@@ -8,7 +8,7 @@ export function DarkModeToggle() {
   return (
     <button
       onClick={toggle}
-      className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="p-2 rounded-lg text-gastus-light-text-secondary dark:text-gastus-text-secondary hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
       aria-label={dark ? "Modo claro" : "Modo escuro"}
     >
       {dark ? (

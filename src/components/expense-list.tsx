@@ -29,15 +29,15 @@ function formatBRL(value: number): string {
 const statusConfig = {
   pago: {
     label: "Pago",
-    classes: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
+    classes: "bg-status-success/10 text-status-success",
   },
   pendente: {
     label: "Pendente",
-    classes: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400",
+    classes: "bg-status-pending/10 text-status-pending",
   },
   atrasado: {
     label: "Atrasado",
-    classes: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
+    classes: "bg-status-danger/10 text-status-danger",
   },
 };
 
@@ -65,7 +65,7 @@ export function ExpenseList({ items, categories, onPay }: ExpenseListProps) {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gastus-text-secondary">
           Nenhum gasto encontrado.
         </p>
       ) : (
@@ -75,14 +75,14 @@ export function ExpenseList({ items, categories, onPay }: ExpenseListProps) {
             return (
               <div
                 key={item.id}
-                className="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
+                className="flex items-center justify-between p-4 rounded-xl bg-gastus-light-card dark:bg-gastus-card border border-gastus-light-border dark:border-gastus-border"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                    <span className="font-medium text-gray-900 dark:text-gastus-text">
                       {item.name}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gastus-card-elevated text-gastus-light-text-secondary dark:text-gastus-text-secondary">
                       {item.category.name}
                     </span>
                     <span
@@ -91,7 +91,7 @@ export function ExpenseList({ items, categories, onPay }: ExpenseListProps) {
                       {badge.label}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gastus-text-secondary">
                     <span>{formatBRL(item.value)}</span>
                     <span>Dia {item.dueDay}</span>
                   </div>

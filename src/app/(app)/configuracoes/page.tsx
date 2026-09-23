@@ -57,19 +57,19 @@ export default function ConfiguracoesPage() {
   if (loading) {
     return (
       <div className="max-w-xl mx-auto">
-        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
+        <p className="text-gray-500 dark:text-gastus-text-secondary">Carregando...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text mb-6">
         Configurações
       </h1>
 
       <form onSubmit={handleSave} className="space-y-6">
-        <div className="p-6 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 space-y-5">
+        <div className="p-6 rounded-xl bg-gastus-light-card dark:bg-gastus-card border border-gastus-light-border dark:border-gastus-border space-y-5">
           <Input
             label="Tópico Ntfy"
             value={ntfyTopic}
@@ -87,7 +87,7 @@ export default function ConfiguracoesPage() {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gastus-text-secondary mb-2">
               Modo escuro
             </label>
             <button
@@ -120,7 +120,7 @@ export default function ConfiguracoesPage() {
         </Button>
       </form>
 
-      <hr className="border-gray-200 dark:border-gray-800 my-8" />
+      <hr className="border-gastus-light-border dark:border-gastus-border my-8" />
 
       <CsvImportExport />
     </div>

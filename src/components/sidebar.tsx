@@ -34,7 +34,7 @@ export function Sidebar() {
       </button>
 
       {/* Sidebar - positioned on the LEFT */}
-      <aside className={`fixed top-0 left-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-40 transition-transform ${collapsed ? "-translate-x-full" : "translate-x-0"} md:translate-x-0 w-64 flex flex-col`}>
+      <aside className={`fixed top-0 left-0 h-full bg-gastus-light-card dark:bg-gastus-card border-r border-gastus-light-border dark:border-gastus-border z-40 transition-transform ${collapsed ? "-translate-x-full" : "translate-x-0"} md:translate-x-0 w-64 flex flex-col`}>
         <div className="p-6">
           <Image src="/logo.png" alt="Gastus" width={140} height={40} priority />
         </div>
@@ -50,7 +50,7 @@ export function Sidebar() {
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   active
                     ? "bg-veridian-50 dark:bg-veridian-950 text-veridian-500"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    : "text-gastus-light-text-secondary dark:text-gastus-text-secondary hover:bg-gastus-light-bg dark:hover:bg-gastus-card-elevated"
                 }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,11 +62,11 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+        <div className="p-4 border-t border-gastus-light-border dark:border-gastus-border flex items-center justify-between">
           <DarkModeToggle />
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors"
+            className="text-sm text-gray-500 dark:text-gastus-text-secondary hover:text-red-500 transition-colors"
           >
             Sair
           </button>

@@ -39,8 +39,8 @@ export function EvolutionChart({ projection }: EvolutionChartProps) {
   }));
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+    <div className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-6">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gastus-text mb-4">
         Projeção de gastos
       </h2>
       <ResponsiveContainer width="100%" height={300}>

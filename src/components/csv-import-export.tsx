@@ -47,13 +47,13 @@ export function CsvImportExport() {
   }
 
   return (
-    <div className="p-6 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 space-y-5">
-      <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+    <div className="p-6 rounded-xl bg-gastus-light-card dark:bg-gastus-card border border-gastus-light-border dark:border-gastus-border space-y-5">
+      <h2 className="text-base font-semibold text-gray-900 dark:text-gastus-text">
         Importar / Exportar CSV
       </h2>
 
       <div>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+        <p className="text-sm text-gastus-light-text-secondary dark:text-gastus-text-secondary mb-3">
           Exporte todos os seus gastos em formato CSV.
         </p>
         <Button type="button" onClick={handleExport}>
@@ -61,8 +61,8 @@ export function CsvImportExport() {
         </Button>
       </div>
 
-      <div className="border-t border-gray-200 dark:border-gray-800 pt-5 space-y-3">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="border-t border-gastus-light-border dark:border-gastus-border pt-5 space-y-3">
+        <p className="text-sm text-gastus-light-text-secondary dark:text-gastus-text-secondary">
           Importe gastos a partir de um arquivo CSV. Colunas esperadas:{" "}
           <span className="font-mono text-xs">tipo, nome, valor, categoria, dia_vencimento</span>
         </p>
@@ -71,7 +71,7 @@ export function CsvImportExport() {
           ref={fileInputRef}
           type="file"
           accept=".csv,text/csv"
-          className="block text-sm text-gray-700 dark:text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 dark:file:bg-gray-800 dark:file:text-gray-300 file:cursor-pointer"
+          className="block text-sm text-gray-700 dark:text-gastus-text-secondary file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 dark:file:bg-gray-800 dark:file:text-gray-300 file:cursor-pointer"
         />
 
         <Button type="button" onClick={handleImport} disabled={importing}>
@@ -88,7 +88,7 @@ export function CsvImportExport() {
               {result.imported} {result.imported === 1 ? "gasto importado" : "gastos importados"}
             </p>
             {result.errors.length > 0 && (
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-gray-500 dark:text-gastus-text-secondary">
                 Erros nas linhas: {result.errors.join(", ")}
               </p>
             )}

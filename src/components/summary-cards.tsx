@@ -17,23 +17,23 @@ function formatBRL(value: number): string {
 export function SummaryCards({ totalToPay, totalPaid, dueCount, selfDebtTotal }: SummaryCardsProps) {
   return (
     <div className={`grid grid-cols-1 gap-4 ${selfDebtTotal && selfDebtTotal > 0 ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total do mês</p>
-        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-6">
+        <p className="text-sm text-gray-500 dark:text-gastus-text-secondary mb-1">Total do mês</p>
+        <p className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           {formatBRL(totalToPay)}
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Já pago</p>
-        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+      <div className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-6">
+        <p className="text-sm text-gray-500 dark:text-gastus-text-secondary mb-1">Já pago</p>
+        <p className="text-2xl font-bold text-status-success">
           {formatBRL(totalPaid)}
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Vencimentos</p>
-        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-6">
+        <p className="text-sm text-gray-500 dark:text-gastus-text-secondary mb-1">Vencimentos</p>
+        <p className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           {dueCount}
         </p>
       </div>

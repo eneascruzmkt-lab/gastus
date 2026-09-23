@@ -24,10 +24,10 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="backdrop:bg-black/50 rounded-2xl p-0 bg-white dark:bg-gray-900 shadow-xl max-w-lg w-full"
+      className="backdrop:bg-black/50 rounded-2xl p-0 bg-gastus-light-card dark:bg-gastus-card shadow-xl max-w-lg w-full"
     >
       <div className="p-6">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{title}</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gastus-text mb-4">{title}</h2>
         {children}
       </div>
     </dialog>

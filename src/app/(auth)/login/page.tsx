@@ -33,8 +33,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gastus-light-bg dark:bg-gastus-bg px-4">
+      <div className="w-full max-w-md bg-gastus-light-card dark:bg-gastus-card rounded-2xl p-8 shadow-lg">
         <div className="flex justify-center mb-8">
           <Image src="/logo.png" alt="Gastus" width={180} height={50} priority />
         </div>
@@ -73,13 +73,13 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-lg bg-veridian-500 text-white font-medium hover:bg-veridian-600 transition-colors disabled:opacity-50"
+            className="w-full py-2.5 rounded-lg bg-veridian-500 text-white font-medium hover:bg-veridian-hover transition-colors disabled:opacity-50"
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-        <p className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-center mt-6 text-sm text-gastus-light-text-secondary dark:text-gastus-text-secondary">
           Não tem conta?{" "}
           <Link href="/cadastro" className="text-veridian-500 hover:underline">
             Criar conta

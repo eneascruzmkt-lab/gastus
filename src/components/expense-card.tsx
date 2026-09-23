@@ -51,18 +51,18 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
 
   return (
     <div
-      className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-800 ${
+      className={`bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-4 border border-gastus-light-border dark:border-gastus-border ${
         inactive ? "opacity-60" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+            <h3 className="font-semibold text-gray-900 dark:text-gastus-text truncate">
               {expense.name}
             </h3>
             {expense.category?.name === "Terceiro" && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium shrink-0">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-status-info/10 text-status-info font-medium shrink-0">
                 Terceiro
               </span>
             )}
@@ -74,7 +74,7 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
           </div>
 
           {expense.category && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            <p className="text-sm text-gray-500 dark:text-gastus-text-secondary mb-2">
               {expense.category.name}
             </p>
           )}
@@ -82,7 +82,7 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
           {/* INSTALLMENT specific */}
           {expense.type === "INSTALLMENT" && (
             <div className="space-y-2">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
+              <p className="text-sm text-gray-700 dark:text-gastus-text-secondary">
                 <span className="font-medium text-veridian-600 dark:text-veridian-400">
                   {formatCurrency(expense.installmentValue ?? 0)}
                 </span>
@@ -90,7 +90,7 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
               </p>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
-                  className="bg-veridian-500 h-2 rounded-full transition-all"
+                  className="h-2 rounded-full transition-all bg-gradient-to-r from-veridian-500 to-status-success"
                   style={{
                     width: `${
                       expense.totalInstallments
@@ -105,7 +105,7 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
                   }}
                 />
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gastus-text-secondary">
                 Parcela{" "}
                 {(expense.remainingInstallments ?? 0) === 0
                   ? expense.totalInstallments
@@ -123,13 +123,13 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
           {/* RECURRING specific */}
           {expense.type === "RECURRING" && (
             <div className="space-y-1">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
+              <p className="text-sm text-gray-700 dark:text-gastus-text-secondary">
                 <span className="font-medium text-veridian-600 dark:text-veridian-400">
                   {formatCurrency(expense.totalValue)}
                 </span>
                 /mês
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gastus-text-secondary">
                 Vencimento: dia {expense.dueDay}
               </p>
             </div>
@@ -138,12 +138,12 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
           {/* ONE_TIME specific */}
           {expense.type === "ONE_TIME" && (
             <div className="space-y-1">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
+              <p className="text-sm text-gray-700 dark:text-gastus-text-secondary">
                 <span className="font-medium text-veridian-600 dark:text-veridian-400">
                   {formatCurrency(expense.totalValue)}
                 </span>
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gastus-text-secondary">
                 Vencimento: {expense.dueMonth ? monthNames[expense.dueMonth] + ", " : ""}dia{" "}
                 {expense.dueDay}
               </p>

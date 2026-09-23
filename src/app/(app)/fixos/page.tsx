@@ -199,7 +199,7 @@ export default function FixosPage() {
           />
           <label
             htmlFor="repeatsYearly"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 dark:text-gastus-text-secondary"
           >
             Repete todo ano
           </label>
@@ -233,7 +233,7 @@ export default function FixosPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           Fixos Pontuais
         </h1>
         <Button onClick={() => { resetForm(); setModalOpen(true); }}>
@@ -242,9 +242,9 @@ export default function FixosPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
+        <p className="text-gray-500 dark:text-gastus-text-secondary">Carregando...</p>
       ) : activeExpenses.length === 0 && inactiveExpenses.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gastus-text-secondary">
           Nenhum gasto fixo pontual encontrado.
         </p>
       ) : (
@@ -253,7 +253,7 @@ export default function FixosPage() {
             <ExpenseCard key={expense.id} expense={expense as any}>
               <button
                 onClick={() => openEdit(expense)}
-                className="p-2 rounded-lg text-gray-500 hover:text-veridian-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-veridian-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                 title="Editar"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -266,7 +266,7 @@ export default function FixosPage() {
                   setSelectedExpense(expense);
                   setDeleteModalOpen(true);
                 }}
-                className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                 title="Excluir"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -282,12 +282,12 @@ export default function FixosPage() {
 
           {inactiveExpenses.length > 0 && (
             <>
-              <h2 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mt-8 mb-2">
+              <h2 className="text-lg font-semibold text-gray-500 dark:text-gastus-text-secondary mt-8 mb-2">
                 Pagos
               </h2>
               {inactiveExpenses.map((expense) => (
                 <ExpenseCard key={expense.id} expense={expense as any}>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 font-medium">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gastus-text-secondary font-medium">
                     Pago
                   </span>
                 </ExpenseCard>
@@ -318,7 +318,7 @@ export default function FixosPage() {
         title="Excluir fixo pontual"
       >
         <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gastus-text-secondary">
             Tem certeza que deseja excluir{" "}
             <strong>{selectedExpense?.name}</strong>? Essa ação não pode ser
             desfeita.

@@ -3,19 +3,52 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
+  /* Brand - Veridian */
   --color-veridian-50: #f0f9f5;
   --color-veridian-100: #d5f0e3;
   --color-veridian-200: #aee0c8;
   --color-veridian-300: #7ecaa8;
   --color-veridian-400: #53b08a;
   --color-veridian-500: #40826D;
-  --color-veridian-600: #2d6a57;
+  --color-veridian-600: #356F5D;
   --color-veridian-700: #255647;
   --color-veridian-800: #1f4539;
   --color-veridian-900: #1a3930;
   --color-veridian-950: #0d201b;
+
+  /* Dark mode - tons com identidade verde */
+  --color-gastus-bg: #0B0F0E;
+  --color-gastus-card: #151A18;
+  --color-gastus-card-elevated: #1C2421;
+  --color-gastus-border: #27312D;
+  --color-gastus-text: #F9FAF9;
+  --color-gastus-text-secondary: #9CA3AF;
+
+  /* Light mode */
+  --color-gastus-light-bg: #F5F7F6;
+  --color-gastus-light-card: #FFFFFF;
+  --color-gastus-light-border: #E5EAE7;
+  --color-gastus-light-text: #111827;
+  --color-gastus-light-text-secondary: #667085;
+
+  /* Status */
+  --color-status-success: #4ADE80;
+  --color-status-pending: #F59E0B;
+  --color-status-danger: #EF4444;
+  --color-status-info: #60A5FA;
+
+  /* Hover */
+  --color-veridian-hover: #4F9A82;
+  --color-veridian-subtle: #40826D1A;
 }
 
 body {
-  @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors;
+  @apply transition-colors;
+  background-color: var(--color-gastus-light-bg);
+  color: var(--color-gastus-light-text);
+}
+
+.dark body {
+  background-color: var(--color-gastus-bg);
+  color: var(--color-gastus-text);
 }

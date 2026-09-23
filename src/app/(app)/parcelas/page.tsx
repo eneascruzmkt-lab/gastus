@@ -252,7 +252,7 @@ export default function ParcelasPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           Parcelas
         </h1>
         <Button onClick={() => { resetForm(); setModalOpen(true); }}>
@@ -261,9 +261,9 @@ export default function ParcelasPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
+        <p className="text-gray-500 dark:text-gastus-text-secondary">Carregando...</p>
       ) : activeExpenses.length === 0 && inactiveExpenses.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gastus-text-secondary">
           Nenhuma parcela encontrada.
         </p>
       ) : (
@@ -272,7 +272,7 @@ export default function ParcelasPage() {
             <ExpenseCard key={expense.id} expense={expense as any}>
               <button
                 onClick={() => openEdit(expense)}
-                className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                 title="Editar"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -286,7 +286,7 @@ export default function ParcelasPage() {
                   setAdiantarQty("1");
                   setAdiantarModalOpen(true);
                 }}
-                className="p-2 rounded-lg text-gray-500 hover:text-veridian-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-veridian-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                 title="Adiantar"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -299,7 +299,7 @@ export default function ParcelasPage() {
                   setSelectedExpense(expense);
                   setAdiarModalOpen(true);
                 }}
-                className="p-2 rounded-lg text-gray-500 hover:text-yellow-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-yellow-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                 title="Adiar"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -312,7 +312,7 @@ export default function ParcelasPage() {
                   setSelectedExpense(expense);
                   setDeleteModalOpen(true);
                 }}
-                className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                 title="Excluir"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -328,7 +328,7 @@ export default function ParcelasPage() {
 
           {inactiveExpenses.length > 0 && (
             <>
-              <h2 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mt-8 mb-2">
+              <h2 className="text-lg font-semibold text-gray-500 dark:text-gastus-text-secondary mt-8 mb-2">
                 Finalizadas
               </h2>
               {inactiveExpenses.map((expense) => (
@@ -342,7 +342,7 @@ export default function ParcelasPage() {
                       });
                       await mutateExp();
                     }}
-                    className="text-xs px-3 py-1 rounded-lg bg-veridian-500 text-white hover:bg-veridian-600 transition-colors"
+                    className="text-xs px-3 py-1 rounded-lg bg-veridian-500 text-white hover:bg-veridian-hover transition-colors"
                     title="Reativar com 1 parcela restante"
                   >
                     Reativar
@@ -352,7 +352,7 @@ export default function ParcelasPage() {
                       setSelectedExpense(expense);
                       setDeleteModalOpen(true);
                     }}
-                    className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                     title="Excluir"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -414,7 +414,7 @@ export default function ParcelasPage() {
               <p className="text-veridian-600 dark:text-veridian-400 font-medium">
                 Valor total: {totalValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </p>
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-gray-500 dark:text-gastus-text-secondary">
                 Faltam {remainingCalc} parcela(s) de {Number(totalInstallments)}
               </p>
             </div>
@@ -451,7 +451,7 @@ export default function ParcelasPage() {
       <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title="Editar parcela">
         <form onSubmit={handleEdit} className="space-y-4">
           {selectedExpense && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gastus-text-secondary">
               Editando: {selectedExpense.name} ({selectedExpense.installmentValue?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/mês, {selectedExpense.remainingInstallments} restante(s))
             </p>
           )}
@@ -514,7 +514,7 @@ export default function ParcelasPage() {
         title="Adiantar parcelas"
       >
         <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gastus-text-secondary">
             Quantas parcelas deseja adiantar de{" "}
             <strong>{selectedExpense?.name}</strong>?
           </p>
@@ -544,7 +544,7 @@ export default function ParcelasPage() {
         title="Adiar parcela"
       >
         <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gastus-text-secondary">
             Tem certeza que deseja adiar a próxima parcela de{" "}
             <strong>{selectedExpense?.name}</strong> para o mês seguinte?
           </p>
@@ -566,7 +566,7 @@ export default function ParcelasPage() {
         title="Excluir parcela"
       >
         <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gastus-text-secondary">
             Tem certeza que deseja excluir{" "}
             <strong>{selectedExpense?.name}</strong>? Essa ação não pode ser
             desfeita.

@@ -98,7 +98,7 @@ export default function RecorrentesPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           Recorrentes
         </h1>
         <Button onClick={() => { resetForm(); setModalOpen(true); }}>
@@ -107,9 +107,9 @@ export default function RecorrentesPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
+        <p className="text-gray-500 dark:text-gastus-text-secondary">Carregando...</p>
       ) : activeExpenses.length === 0 && inactiveExpenses.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gastus-text-secondary">
           Nenhum gasto recorrente encontrado.
         </p>
       ) : (
@@ -121,7 +121,7 @@ export default function RecorrentesPage() {
                   setSelectedExpense(expense);
                   setCancelModalOpen(true);
                 }}
-                className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                 title="Cancelar"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -135,7 +135,7 @@ export default function RecorrentesPage() {
 
           {inactiveExpenses.length > 0 && (
             <>
-              <h2 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mt-8 mb-2">
+              <h2 className="text-lg font-semibold text-gray-500 dark:text-gastus-text-secondary mt-8 mb-2">
                 Cancelados
               </h2>
               {inactiveExpenses.map((expense) => (
@@ -203,7 +203,7 @@ export default function RecorrentesPage() {
         title="Cancelar recorrente"
       >
         <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gastus-text-secondary">
             Tem certeza que deseja cancelar{" "}
             <strong>{selectedExpense?.name}</strong>? O gasto não será mais
             contabilizado nos próximos meses.

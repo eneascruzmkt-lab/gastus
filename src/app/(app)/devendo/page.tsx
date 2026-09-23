@@ -168,7 +168,7 @@ export default function DevendoPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gastus-text">
           Devendo
         </h1>
         <Button onClick={() => { resetCreateForm(); setCreateModalOpen(true); }}>
@@ -177,9 +177,9 @@ export default function DevendoPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
+        <p className="text-gray-500 dark:text-gastus-text-secondary">Carregando...</p>
       ) : activeDebts.length === 0 && inactiveDebts.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gastus-text-secondary">
           Nenhuma dívida encontrada.
         </p>
       ) : (
@@ -189,15 +189,15 @@ export default function DevendoPage() {
             return (
               <div
                 key={debt.id}
-                className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5"
+                className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-5"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                    <h3 className="font-semibold text-gray-900 dark:text-gastus-text">
                       {debt.name}
                     </h3>
                     {debt.note && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                      <p className="text-sm text-gray-500 dark:text-gastus-text-secondary mt-0.5">
                         {debt.note}
                       </p>
                     )}
@@ -220,7 +220,7 @@ export default function DevendoPage() {
                         setDeleteTarget(debt);
                         setDeleteModalOpen(true);
                       }}
-                      className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                       title="Excluir"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -236,19 +236,19 @@ export default function DevendoPage() {
 
                 <div className="grid grid-cols-3 gap-3 text-sm mb-3">
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400">Valor original</p>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                    <p className="text-gray-500 dark:text-gastus-text-secondary">Valor original</p>
+                    <p className="font-medium text-gray-900 dark:text-gastus-text">
                       {formatBRL(debt.totalValue)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400">Já reposto</p>
-                    <p className="font-medium text-green-600 dark:text-green-400">
+                    <p className="text-gray-500 dark:text-gastus-text-secondary">Já reposto</p>
+                    <p className="font-medium text-status-success">
                       {formatBRL(totalPaid)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400">Falta</p>
+                    <p className="text-gray-500 dark:text-gastus-text-secondary">Falta</p>
                     <p className="font-medium text-orange-600 dark:text-orange-400">
                       {formatBRL(remaining)}
                     </p>
@@ -271,7 +271,7 @@ export default function DevendoPage() {
 
           {inactiveDebts.length > 0 && (
             <>
-              <h2 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mt-8 mb-2">
+              <h2 className="text-lg font-semibold text-gray-500 dark:text-gastus-text-secondary mt-8 mb-2">
                 Quitados
               </h2>
               {inactiveDebts.map((debt) => {
@@ -279,21 +279,21 @@ export default function DevendoPage() {
                 return (
                   <div
                     key={debt.id}
-                    className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 opacity-60"
+                    className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-5 opacity-60"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                        <h3 className="font-semibold text-gray-900 dark:text-gastus-text">
                           {debt.name}
                         </h3>
                         {debt.note && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                          <p className="text-sm text-gray-500 dark:text-gastus-text-secondary mt-0.5">
                             {debt.note}
                           </p>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-status-success/10 text-status-success font-medium">
                           Quitado
                         </span>
                         <button
@@ -301,7 +301,7 @@ export default function DevendoPage() {
                             setDeleteTarget(debt);
                             setDeleteModalOpen(true);
                           }}
-                          className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gastus-card-elevated transition-colors"
                           title="Excluir"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -314,7 +314,7 @@ export default function DevendoPage() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gastus-text-secondary mt-1">
                       {formatBRL(totalPaid)} reposto de {formatBRL(debt.totalValue)}
                     </p>
                   </div>
@@ -372,7 +372,7 @@ export default function DevendoPage() {
       <Modal open={reporModalOpen} onClose={() => setReporModalOpen(false)} title="Repor valor">
         <form onSubmit={handleRepor} className="space-y-4">
           {selectedDebt && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gastus-text-secondary">
               Falta {formatBRL(getDebtInfo(selectedDebt).remaining)} de {formatBRL(selectedDebt.totalValue)}
             </p>
           )}
@@ -400,7 +400,7 @@ export default function DevendoPage() {
       {/* Modal: Excluir */}
       <Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Excluir dívida">
         <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gastus-text-secondary">
             Tem certeza que deseja excluir{" "}
             <strong>{deleteTarget?.name}</strong>? Essa ação não pode ser desfeita.
           </p>
