@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ExpenseType {
+  INSTALLMENT
+  RECURRING
+  ONE_TIME
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  name               String
+  email              String    @unique
+  password           String
+  ntfyTopic          String?   @map("ntfy_topic")
+  notifyDaysBefore   Int       @default(3) @map("notify_days_before")
+  darkMode           Boolean   @default(false) @map("dark_mode")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  expenses           Expense[]
+  categories         Category[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  userId      String?   @map("user_id")
+  predefined  Boolean   @default(false)
+
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenses    Expense[]
+
+  @@map("categories")
+}
+
+model Expense {
+  id                    String      @id @default(cuid())
+  userId                String      @map("user_id")
+  categoryId            String      @map("category_id")
+  type                  ExpenseType
+  name                  String
+  totalValue            Float       @map("total_value")
+  installmentValue      Float?      @map("installment_value")
+  totalInstallments     Int?        @map("total_installments")
+  remainingInstallments Int?        @map("remaining_installments")
+  startDate             DateTime?   @map("start_date")
+  dueDay                Int         @map("due_day")
+  dueMonth              Int?        @map("due_month")
+  repeatsYearly         Boolean     @default(false) @map("repeats_yearly")
+  active                Boolean     @default(true)
+  createdAt             DateTime    @default(now()) @map("created_at")
+
+  user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category              Category    @relation(fields: [categoryId], references: [id])
+  payments              Payment[]
+
+  @@map("expenses")
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  expenseId       String   @map("expense_id")
+  value           Float
+  paymentDate     DateTime @map("payment_date")
+  referenceMonth  String   @map("reference_month")
+
+  expense         Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
