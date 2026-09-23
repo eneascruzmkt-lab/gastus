@@ -36,13 +36,7 @@ function formatCurrency(value: number) {
 }
 
 function isLastOnNextBill(expense: Expense): boolean {
-  if (expense.type !== "INSTALLMENT" || expense.remainingInstallments !== 1) return false;
-  if (!expense.startDate || !expense.totalInstallments) return false;
-  const start = new Date(expense.startDate);
-  const lastMonth = new Date(start.getFullYear(), start.getMonth() + expense.totalInstallments - 1, 1);
-  const now = new Date();
-  const nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  return lastMonth.getFullYear() === nextBill.getFullYear() && lastMonth.getMonth() === nextBill.getMonth();
+  return expense.type === "INSTALLMENT" && expense.remainingInstallments === 1;
 }
 
 export function ExpenseCard({ expense, children }: ExpenseCardProps) {

@@ -21,7 +21,7 @@ export async function GET() {
     include: { category: true, payments: true },
   });
 
-  // Filter expenses that appear in the current month
+  // Filter expenses that appear in the current billing month
   const items: {
     id: string;
     name: string;
@@ -111,7 +111,6 @@ export async function GET() {
   ).length;
 
   // Projection: from January of current year until last installment ends
-  // Find the latest end month among all installments
   let lastEndDate = new Date(refYear, 11, 1); // default: December of current year
   for (const expense of allExpenses) {
     if (expense.type === "INSTALLMENT" && expense.startDate && expense.totalInstallments) {
@@ -164,7 +163,9 @@ export async function GET() {
     projection.push({ month: projMonth, total });
   }
 
-  // Freedom alerts: installments that finished last month
+  // Freedom alerts: installments that were finalized last month
+  // Uses the last payment's referenceMonth to detect when it actually ended
+  // (accounts for advances that finish the expense earlier than the original schedule)
   const lastMonth = format(
     subMonths(new Date(refYear, refMonthNum - 1, 1), 1),
     "yyyy-MM"
@@ -176,14 +177,14 @@ export async function GET() {
       expense.type === "INSTALLMENT" &&
       !expense.active &&
       expense.remainingInstallments === 0 &&
-      expense.startDate &&
-      expense.totalInstallments
+      expense.payments.length > 0
     ) {
-      const endMonth = format(
-        addMonths(expense.startDate, expense.totalInstallments - 1),
-        "yyyy-MM"
-      );
-      if (endMonth === lastMonth) {
+      // Pegar o mês da última parcela paga para saber quando realmente finalizou
+      const lastPaymentMonth = expense.payments
+        .map((p) => p.referenceMonth)
+        .sort()
+        .pop();
+      if (lastPaymentMonth === lastMonth) {
         freedomAlerts.push({
           name: expense.name,
           freedValue: expense.installmentValue || expense.totalValue,
@@ -191,6 +192,20 @@ export async function GET() {
       }
     }
   }
+
+  // Total debt: sum of remaining installments × installment value (all active installments)
+  const totalDebt = allExpenses.reduce((sum, expense) => {
+    if (
+      expense.type === "INSTALLMENT" &&
+      expense.active &&
+      expense.remainingInstallments &&
+      expense.installmentValue &&
+      expense.category.name !== "Terceiro"
+    ) {
+      return sum + expense.installmentValue * expense.remainingInstallments;
+    }
+    return sum;
+  }, 0);
 
   // Self-debt summary (separate from monthly expenses)
   const selfDebts = await prisma.expense.findMany({
@@ -210,5 +225,6 @@ export async function GET() {
     projection,
     freedomAlerts,
     selfDebtTotal,
+    totalDebt,
   });
 }

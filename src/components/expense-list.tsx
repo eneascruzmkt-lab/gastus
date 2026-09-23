@@ -16,7 +16,7 @@ interface ExpenseItem {
 interface ExpenseListProps {
   items: ExpenseItem[];
   categories: { id: string; name: string }[];
-  onPay: (expenseId: string, value: number) => void;
+  onPay?: (expenseId: string, value: number) => void;
 }
 
 function formatBRL(value: number): string {
@@ -97,7 +97,7 @@ export function ExpenseList({ items, categories, onPay }: ExpenseListProps) {
                   </div>
                 </div>
 
-                {item.status !== "pago" && (
+                {onPay && item.status !== "pago" && (
                   <Button
                     onClick={() => onPay(item.id, item.value)}
                     className="sm:ml-4 text-sm whitespace-nowrap self-start sm:self-auto"

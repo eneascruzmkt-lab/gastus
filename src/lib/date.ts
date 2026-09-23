@@ -25,3 +25,15 @@ export function getInstallmentMonth(startDate: Date, offset: number): string {
   const date = addMonths(startDate, offset);
   return format(date, "yyyy-MM");
 }
+
+/**
+ * Retorna o mês da fatura aberta baseado no dia de vencimento.
+ * Se hoje já passou do dueDay, a fatura aberta é do mês que vem.
+ */
+export function billingMonth(dueDay: number): string {
+  const now = nowBrazil();
+  if (now.getDate() > dueDay) {
+    return format(addMonths(now, 1), "yyyy-MM");
+  }
+  return format(now, "yyyy-MM");
+}

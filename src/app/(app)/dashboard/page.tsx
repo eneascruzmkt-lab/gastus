@@ -6,6 +6,7 @@ import { SummaryCards } from "@/components/summary-cards";
 import { ExpenseList } from "@/components/expense-list";
 import { EvolutionChart } from "@/components/evolution-chart";
 import { FreedomAlert } from "@/components/freedom-alert";
+import { Button } from "@/components/ui/button";
 
 interface DashboardItem {
   id: string;
@@ -23,6 +24,7 @@ interface DashboardData {
   projection: { month: string; total: number }[];
   freedomAlerts: { name: string; freedValue: number }[];
   selfDebtTotal: number;
+  totalDebt: number;
 }
 
 const monthNames = [
@@ -101,15 +103,51 @@ export default function DashboardPage() {
         totalPaid={data.summary.totalPaid}
         dueCount={data.summary.dueCount}
         selfDebtTotal={data.selfDebtTotal}
+        totalDebt={data.totalDebt}
       />
+
+      <EvolutionChart projection={data.projection} />
 
       <ExpenseList
         items={data.items}
         categories={categories}
-        onPay={handlePay}
       />
 
-      <EvolutionChart projection={data.projection} />
+      {data.items.some((i) => i.status !== "pago") && (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gastus-text mb-3">
+            Marcar como pago
+          </h2>
+          <div className="grid gap-3">
+            {data.items
+              .filter((i) => i.status !== "pago")
+              .map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-3 p-4 rounded-xl bg-gastus-light-card dark:bg-gastus-card border border-gastus-light-border dark:border-gastus-border"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="font-medium text-gray-900 dark:text-gastus-text truncate">
+                      {item.name}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gastus-text-secondary">
+                      {item.value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gastus-text-secondary">
+                      Dia {item.dueDay}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={() => handlePay(item.id, item.value)}
+                    className="text-sm whitespace-nowrap shrink-0"
+                  >
+                    Pagar
+                  </Button>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

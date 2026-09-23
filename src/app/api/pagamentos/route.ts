@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { currentMonthBrazil } from "@/lib/date";
+import { billingMonth } from "@/lib/date";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Gasto não encontrado" }, { status: 404 });
   }
 
-  const month = referenceMonth || currentMonthBrazil();
+  const month = referenceMonth || billingMonth(expense.dueDay);
 
   if (expense.type !== "SELF_DEBT") {
     const existingPayment = await prisma.payment.findFirst({
