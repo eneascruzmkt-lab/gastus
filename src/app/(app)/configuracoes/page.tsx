@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDarkMode } from "@/components/providers";
+import { CsvImportExport } from "@/components/csv-import-export";
 
 export default function ConfiguracoesPage() {
   const [ntfyTopic, setNtfyTopic] = useState("");
@@ -118,6 +119,10 @@ export default function ConfiguracoesPage() {
           {saving ? "Salvando..." : "Salvar"}
         </Button>
       </form>
+
+      <hr className="border-gray-200 dark:border-gray-800 my-8" />
+
+      <CsvImportExport />
     </div>
   );
 }
