@@ -90,10 +90,10 @@ export default function DevendoPage() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (submitting) return;
+    if (submitting || !categoryId) return;
     setSubmitting(true);
     try {
-      await fetch("/api/gastos", {
+      const res = await fetch("/api/gastos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -105,6 +105,16 @@ export default function DevendoPage() {
           note: note.trim() || null,
         }),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        try {
+          const data = JSON.parse(text);
+          alert(data.error || "Erro ao criar dívida");
+        } catch {
+          alert("Erro ao criar dívida: " + text);
+        }
+        return;
+      }
       setCreateModalOpen(false);
       resetCreateForm();
       await fetchData();
@@ -177,7 +187,7 @@ export default function DevendoPage() {
           Devendo
         </h1>
         <Button onClick={() => { resetCreateForm(); setCreateModalOpen(true); }}>
-          Nova divida
+          Nova dívida
         </Button>
       </div>
 
@@ -185,7 +195,7 @@ export default function DevendoPage() {
         <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
       ) : activeDebts.length === 0 && inactiveDebts.length === 0 ? (
         <p className="text-gray-500 dark:text-gray-400">
-          Nenhuma divida encontrada.
+          Nenhuma dívida encontrada.
         </p>
       ) : (
         <div className="space-y-3">
@@ -330,8 +340,8 @@ export default function DevendoPage() {
         </div>
       )}
 
-      {/* Modal: Nova divida */}
-      <Modal open={createModalOpen} onClose={() => setCreateModalOpen(false)} title="Nova divida">
+      {/* Modal: Nova dívida */}
+      <Modal open={createModalOpen} onClose={() => setCreateModalOpen(false)} title="Nova dívida">
         <form onSubmit={handleCreate} className="space-y-4">
           <Input
             label="Nome"
@@ -403,7 +413,7 @@ export default function DevendoPage() {
       </Modal>
 
       {/* Modal: Excluir */}
-      <Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Excluir divida">
+      <Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Excluir dívida">
         <div className="space-y-4">
           <p className="text-gray-700 dark:text-gray-300">
             Tem certeza que deseja excluir{" "}

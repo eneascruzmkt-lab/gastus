@@ -30,24 +30,32 @@ export async function POST(request: Request) {
   const userId = (session.user as any).id;
   const body = await request.json();
 
-  const expense = await prisma.expense.create({
-    data: {
-      userId,
-      categoryId: body.categoryId,
-      type: body.type,
-      name: body.name,
-      note: body.note || null,
-      totalValue: body.totalValue,
-      installmentValue: body.installmentValue || null,
-      totalInstallments: body.totalInstallments || null,
-      remainingInstallments: body.remainingInstallments || null,
-      startDate: body.startDate ? new Date(body.startDate) : null,
-      dueDay: body.dueDay,
-      dueMonth: body.dueMonth || null,
-      repeatsYearly: body.repeatsYearly || false,
-    },
-    include: { category: true },
-  });
+  try {
+    const expense = await prisma.expense.create({
+      data: {
+        userId,
+        categoryId: body.categoryId,
+        type: body.type,
+        name: body.name,
+        note: body.note || null,
+        totalValue: body.totalValue,
+        installmentValue: body.installmentValue || null,
+        totalInstallments: body.totalInstallments || null,
+        remainingInstallments: body.remainingInstallments || null,
+        startDate: body.startDate ? new Date(body.startDate) : null,
+        dueDay: body.dueDay ?? 0,
+        dueMonth: body.dueMonth || null,
+        repeatsYearly: body.repeatsYearly || false,
+      },
+      include: { category: true },
+    });
 
-  return NextResponse.json(expense);
+    return NextResponse.json(expense);
+  } catch (error: any) {
+    console.error("Erro ao criar gasto:", error);
+    return NextResponse.json(
+      { error: error.message || "Erro ao criar gasto" },
+      { status: 500 }
+    );
+  }
 }
