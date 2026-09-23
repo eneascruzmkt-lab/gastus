@@ -36,6 +36,8 @@ export async function POST(request: Request) {
     });
 
     for (const expense of expenses) {
+      if (expense.type === "SELF_DEBT") continue;
+
       // ONE_TIME: only notify in the correct dueMonth
       if (expense.type === "ONE_TIME" && expense.dueMonth !== null) {
         const checkMonthNum = parseInt(checkMonth.split("-")[1]);

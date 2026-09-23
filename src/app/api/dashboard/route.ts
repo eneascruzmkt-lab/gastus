@@ -42,6 +42,7 @@ export async function GET() {
 
   for (const expense of allExpenses) {
     if (!expense.active) continue;
+    if (expense.type === "SELF_DEBT") continue;
 
     let appearsThisMonth = false;
     let value = 0;
@@ -118,6 +119,7 @@ export async function GET() {
 
     for (const expense of allExpenses) {
       if (!expense.active && expense.type !== "INSTALLMENT") continue;
+      if (expense.type === "SELF_DEBT") continue;
 
       switch (expense.type) {
         case "RECURRING":
@@ -176,10 +178,22 @@ export async function GET() {
     }
   }
 
+  // Self-debt summary (separate from monthly expenses)
+  const selfDebts = await prisma.expense.findMany({
+    where: { userId, type: "SELF_DEBT", active: true },
+    include: { payments: true },
+  });
+
+  const selfDebtTotal = selfDebts.reduce((sum, debt) => {
+    const paid = debt.payments.reduce((s, p) => s + p.value, 0);
+    return sum + (debt.totalValue - paid);
+  }, 0);
+
   return NextResponse.json({
     items,
     summary: { totalToPay, totalPaid, dueCount },
     projection,
     freedomAlerts,
+    selfDebtTotal,
   });
 }

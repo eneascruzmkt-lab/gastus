@@ -11,6 +11,7 @@ enum ExpenseType {
   INSTALLMENT
   RECURRING
   ONE_TIME
+  SELF_DEBT
 }
 
 model User {
@@ -20,7 +21,7 @@ model User {
   password           String
   ntfyTopic          String?   @map("ntfy_topic")
   notifyDaysBefore   Int       @default(3) @map("notify_days_before")
-  darkMode           Boolean   @default(false) @map("dark_mode")
+  darkMode           Boolean   @default(true) @map("dark_mode")
   createdAt          DateTime  @default(now()) @map("created_at")
 
   expenses           Expense[]
@@ -47,6 +48,7 @@ model Expense {
   categoryId            String      @map("category_id")
   type                  ExpenseType
   name                  String
+  note                  String?     @map("note")
   totalValue            Float       @map("total_value")
   installmentValue      Float?      @map("installment_value")
   totalInstallments     Int?        @map("total_installments")

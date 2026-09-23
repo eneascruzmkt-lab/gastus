@@ -21,12 +21,14 @@ export async function POST(request: Request) {
 
   const month = referenceMonth || currentMonthBrazil();
 
-  const existingPayment = await prisma.payment.findFirst({
-    where: { expenseId, referenceMonth: month },
-  });
+  if (expense.type !== "SELF_DEBT") {
+    const existingPayment = await prisma.payment.findFirst({
+      where: { expenseId, referenceMonth: month },
+    });
 
-  if (existingPayment) {
-    return NextResponse.json({ error: "Já foi marcado como pago neste mês" }, { status: 400 });
+    if (existingPayment) {
+      return NextResponse.json({ error: "Já foi marcado como pago neste mês" }, { status: 400 });
+    }
   }
 
   const payment = await prisma.payment.create({
@@ -56,6 +58,20 @@ export async function POST(request: Request) {
       where: { id: expense.id },
       data: { active: false },
     });
+  }
+
+  // For self-debt, check if fully paid
+  if (expense.type === "SELF_DEBT") {
+    const allPayments = await prisma.payment.findMany({
+      where: { expenseId: expense.id },
+    });
+    const totalPaid = allPayments.reduce((sum, p) => sum + p.value, 0);
+    if (totalPaid >= expense.totalValue) {
+      await prisma.expense.update({
+        where: { id: expense.id },
+        data: { active: false },
+      });
+    }
   }
 
   return NextResponse.json(payment);

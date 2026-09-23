@@ -20,6 +20,7 @@ interface DashboardData {
   summary: { totalToPay: number; totalPaid: number; dueCount: number };
   projection: { month: string; total: number }[];
   freedomAlerts: { name: string; freedValue: number }[];
+  selfDebtTotal: number;
 }
 
 export default function DashboardPage() {
@@ -99,6 +100,7 @@ export default function DashboardPage() {
         totalToPay={data.summary.totalToPay}
         totalPaid={data.summary.totalPaid}
         dueCount={data.summary.dueCount}
+        selfDebtTotal={data.selfDebtTotal}
       />
 
       <ExpenseList

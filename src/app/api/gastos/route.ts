@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       categoryId: body.categoryId,
       type: body.type,
       name: body.name,
+      note: body.note || null,
       totalValue: body.totalValue,
       installmentValue: body.installmentValue || null,
       totalInstallments: body.totalInstallments || null,
