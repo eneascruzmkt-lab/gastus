@@ -6,6 +6,7 @@ import { SummaryCards } from "@/components/summary-cards";
 import { ExpenseList } from "@/components/expense-list";
 import { EvolutionChart } from "@/components/evolution-chart";
 import { FreedomAlert } from "@/components/freedom-alert";
+import { CategoryChart } from "@/components/category-chart";
 import { Button } from "@/components/ui/button";
 
 interface DashboardItem {
@@ -105,6 +106,8 @@ export default function DashboardPage() {
         selfDebtTotal={data.selfDebtTotal}
         totalDebt={data.totalDebt}
       />
+
+      <CategoryChart items={data.items} />
 
       <EvolutionChart projection={data.projection} />
 
