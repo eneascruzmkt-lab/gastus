@@ -57,7 +57,7 @@ export function EvolutionChart({ projection }: EvolutionChartProps) {
             tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`}
           />
           <Tooltip
-            formatter={(value: number) => [formatBRL(value), "Total"]}
+            formatter={(value) => [formatBRL(Number(value) || 0), "Total"]}
             contentStyle={{
               backgroundColor: "#1F2937",
               border: "1px solid #374151",
