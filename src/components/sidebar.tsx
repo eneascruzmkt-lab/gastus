@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -35,7 +36,7 @@ export function Sidebar() {
       {/* Sidebar - positioned on the LEFT */}
       <aside className={`fixed top-0 left-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-40 transition-transform ${collapsed ? "-translate-x-full" : "translate-x-0"} md:translate-x-0 w-64 flex flex-col`}>
         <div className="p-6">
-          <h1 className="text-xl font-bold text-veridian-500">Gastus</h1>
+          <Image src="/logo.png" alt="Gastus" width={140} height={40} priority />
         </div>
 
         <nav className="flex-1 px-3 space-y-1">

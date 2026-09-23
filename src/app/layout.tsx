@@ -5,6 +5,9 @@ import { Providers } from "@/components/providers";
 export const metadata: Metadata = {
   title: "Gastus",
   description: "Controle de gastos fixos, parcelas e recorrentes",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

@@ -11,6 +11,7 @@ const defaultCategories = [
   "Transporte",
   "Educação",
   "Alimentação",
+  "Terceiro",
   "Outros",
 ];
 

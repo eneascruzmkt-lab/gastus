@@ -43,6 +43,7 @@ export async function GET() {
   for (const expense of allExpenses) {
     if (!expense.active) continue;
     if (expense.type === "SELF_DEBT") continue;
+    if (expense.category.name === "Terceiro") continue;
 
     let appearsThisMonth = false;
     let value = 0;
@@ -132,6 +133,7 @@ export async function GET() {
     for (const expense of allExpenses) {
       if (!expense.active && expense.type !== "INSTALLMENT") continue;
       if (expense.type === "SELF_DEBT") continue;
+      if (expense.category.name === "Terceiro") continue;
 
       switch (expense.type) {
         case "RECURRING":

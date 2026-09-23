@@ -61,6 +61,11 @@ export function ExpenseCard({ expense, children }: ExpenseCardProps) {
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
               {expense.name}
             </h3>
+            {expense.category?.name === "Terceiro" && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium shrink-0">
+                Terceiro
+              </span>
+            )}
             {expense.type === "ONE_TIME" && expense.repeatsYearly && (
               <span className="text-xs px-2 py-0.5 rounded-full bg-veridian-100 dark:bg-veridian-900/30 text-veridian-700 dark:text-veridian-400 font-medium shrink-0">
                 Anual

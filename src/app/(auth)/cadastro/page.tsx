@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -36,9 +37,12 @@ export default function CadastroPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg">
-        <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+        <div className="flex justify-center mb-6">
+          <Image src="/logo.png" alt="Gastus" width={180} height={50} priority />
+        </div>
+        <h2 className="text-lg font-semibold text-center text-gray-700 dark:text-gray-300 mb-6">
           Criar conta
-        </h1>
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
