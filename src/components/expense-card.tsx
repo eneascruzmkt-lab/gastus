@@ -1,0 +1,133 @@
+"use client";
+
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface Expense {
+  id: string;
+  name: string;
+  type: "INSTALLMENT" | "RECURRING" | "ONE_TIME";
+  totalValue: number;
+  installmentValue?: number | null;
+  totalInstallments?: number | null;
+  remainingInstallments?: number | null;
+  dueDay: number;
+  dueMonth?: number | null;
+  repeatsYearly?: boolean;
+  active: boolean;
+  category?: Category | null;
+}
+
+interface ExpenseCardProps {
+  expense: Expense;
+  children?: React.ReactNode;
+}
+
+const monthNames = [
+  "", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
+function formatCurrency(value: number) {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+export function ExpenseCard({ expense, children }: ExpenseCardProps) {
+  const inactive = !expense.active;
+
+  return (
+    <div
+      className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-800 ${
+        inactive ? "opacity-60" : ""
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+              {expense.name}
+            </h3>
+            {expense.type === "ONE_TIME" && expense.repeatsYearly && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-veridian-100 dark:bg-veridian-900/30 text-veridian-700 dark:text-veridian-400 font-medium shrink-0">
+                Anual
+              </span>
+            )}
+          </div>
+
+          {expense.category && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+              {expense.category.name}
+            </p>
+          )}
+
+          {/* INSTALLMENT specific */}
+          {expense.type === "INSTALLMENT" && (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="font-medium text-veridian-600 dark:text-veridian-400">
+                  {formatCurrency(expense.installmentValue ?? 0)}
+                </span>
+                /mês
+              </p>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div
+                  className="bg-veridian-500 h-2 rounded-full transition-all"
+                  style={{
+                    width: `${
+                      expense.totalInstallments
+                        ? ((expense.totalInstallments - (expense.remainingInstallments ?? 0)) /
+                            expense.totalInstallments) *
+                          100
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {(expense.totalInstallments ?? 0) - (expense.remainingInstallments ?? 0)} de{" "}
+                {expense.totalInstallments} parcelas pagas
+              </p>
+            </div>
+          )}
+
+          {/* RECURRING specific */}
+          {expense.type === "RECURRING" && (
+            <div className="space-y-1">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="font-medium text-veridian-600 dark:text-veridian-400">
+                  {formatCurrency(expense.totalValue)}
+                </span>
+                /mês
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Vencimento: dia {expense.dueDay}
+              </p>
+            </div>
+          )}
+
+          {/* ONE_TIME specific */}
+          {expense.type === "ONE_TIME" && (
+            <div className="space-y-1">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="font-medium text-veridian-600 dark:text-veridian-400">
+                  {formatCurrency(expense.totalValue)}
+                </span>
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Vencimento: {expense.dueMonth ? monthNames[expense.dueMonth] + ", " : ""}dia{" "}
+                {expense.dueDay}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        {children && (
+          <div className="flex items-center gap-1 shrink-0">{children}</div>
+        )}
+      </div>
+    </div>
+  );
+}
