@@ -1,26 +1,23 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-veridian-50: #f0f9f5;
+  --color-veridian-100: #d5f0e3;
+  --color-veridian-200: #aee0c8;
+  --color-veridian-300: #7ecaa8;
+  --color-veridian-400: #53b08a;
+  --color-veridian-500: #40826D;
+  --color-veridian-600: #2d6a57;
+  --color-veridian-700: #255647;
+  --color-veridian-800: #1f4539;
+  --color-veridian-900: #1a3930;
+  --color-veridian-950: #0d201b;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-white text-gray-900 transition-colors;
+}
+
+.dark body {
+  @apply bg-gray-950 text-gray-100;
 }
