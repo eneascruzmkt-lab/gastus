@@ -13,11 +13,15 @@ export function useDarkMode() {
 }
 
 function DarkModeProvider({ children }: { children: React.ReactNode }) {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem("gastus-dark-mode");
-    if (stored === "true") {
+    // Dark por padrão: só desliga se explicitamente "false"
+    if (stored === "false") {
+      setDark(false);
+      document.documentElement.classList.remove("dark");
+    } else {
       setDark(true);
       document.documentElement.classList.add("dark");
     }
