@@ -41,7 +41,7 @@ export async function GET() {
   }[] = [];
 
   for (const expense of allExpenses) {
-    if (!expense.active) continue;
+    if (!expense.active && expense.type !== "INSTALLMENT") continue;
     if (expense.type === "SELF_DEBT") continue;
     if (expense.category.name === "Terceiro") continue;
 
