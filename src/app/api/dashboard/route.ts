@@ -104,6 +104,10 @@ export async function GET() {
       case "INSTALLMENT":
         if (expense.startDate && expense.totalInstallments) {
           const startMonth = format(expense.startDate, "yyyy-MM");
+          const originalEnd = format(
+            addMonths(expense.startDate, expense.totalInstallments - 1),
+            "yyyy-MM"
+          );
           const endMonth = getEffectiveEnd(
             expense.startDate,
             expense.totalInstallments,
@@ -113,7 +117,15 @@ export async function GET() {
           );
           if (refMonth >= startMonth && refMonth <= endMonth) {
             appearsThisMonth = true;
-            value = expense.installmentValue || expense.totalValue;
+            const val = expense.installmentValue || expense.totalValue;
+            if (refMonth === endMonth && endMonth < originalEnd) {
+              const [ey, em] = endMonth.split("-").map(Number);
+              const [oy, om] = originalEnd.split("-").map(Number);
+              const cutMonths = (oy * 12 + om) - (ey * 12 + em);
+              value = val * (1 + cutMonths);
+            } else {
+              value = val;
+            }
           }
         }
         break;
@@ -220,6 +232,10 @@ export async function GET() {
         case "INSTALLMENT":
           if (expense.startDate && expense.totalInstallments) {
             const startMonth = format(expense.startDate, "yyyy-MM");
+            const originalEnd = format(
+              addMonths(expense.startDate, expense.totalInstallments - 1),
+              "yyyy-MM"
+            );
             const endMonth = getEffectiveEnd(
               expense.startDate,
               expense.totalInstallments,
@@ -228,7 +244,15 @@ export async function GET() {
               expense.dueDay
             );
             if (projMonth >= startMonth && projMonth <= endMonth) {
-              parcelas += expense.installmentValue || expense.totalValue;
+              const val = expense.installmentValue || expense.totalValue;
+              if (projMonth === endMonth && endMonth < originalEnd) {
+                const [ey, em] = endMonth.split("-").map(Number);
+                const [oy, om] = originalEnd.split("-").map(Number);
+                const cutMonths = (oy * 12 + om) - (ey * 12 + em);
+                parcelas += val * (1 + cutMonths);
+              } else {
+                parcelas += val;
+              }
             }
           }
           break;
