@@ -241,12 +241,39 @@ export default function ParcelasPage() {
     }
   }
 
-  const activeExpenses = expenses.filter((e) => e.active);
-  const inactiveExpenses = expenses.filter((e) => !e.active);
+  // Filtros
+  const [filterCategory, setFilterCategory] = useState("");
+  const [filterStatus, setFilterStatus] = useState("active");
+
+  let filtered = expenses;
+  if (filterCategory) filtered = filtered.filter((e) => e.category?.id === filterCategory);
+  if (filterStatus === "active") filtered = filtered.filter((e) => e.active);
+  else if (filterStatus === "inactive") filtered = filtered.filter((e) => !e.active);
+
+  const activeExpenses = filtered.filter((e) => e.active);
+  const inactiveExpenses = filtered.filter((e) => !e.active);
 
   const categoryOptions = [
     { value: "", label: "Selecione uma categoria" },
     ...categories.map((c) => ({ value: c.id, label: c.name })),
+  ];
+
+  // Categorias únicas das parcelas para o filtro
+  const expCategoriesMap = new Map<string, string>();
+  for (const e of expenses) {
+    if (e.category) expCategoriesMap.set(e.category.id, e.category.name);
+  }
+  const filterCategoryOptions = [
+    { value: "", label: "Todas as categorias" },
+    ...Array.from(expCategoriesMap.entries())
+      .map(([id, name]) => ({ value: id, label: name }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+  ];
+
+  const filterStatusOptions = [
+    { value: "", label: "Todas" },
+    { value: "active", label: "Ativas" },
+    { value: "inactive", label: "Finalizadas" },
   ];
 
   return (
@@ -258,6 +285,26 @@ export default function ParcelasPage() {
         <Button onClick={() => { resetForm(); setModalOpen(true); }}>
           Nova parcela
         </Button>
+      </div>
+
+      {/* Filtros */}
+      <div className="flex gap-3 mb-4">
+        <div className="max-w-[200px]">
+          <Select
+            label="Categoria"
+            options={filterCategoryOptions}
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          />
+        </div>
+        <div className="max-w-[200px]">
+          <Select
+            label="Status"
+            options={filterStatusOptions}
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          />
+        </div>
       </div>
 
       {loading ? (
