@@ -131,7 +131,7 @@ export default function GastosPage() {
           type,
           name: name.trim(),
           totalValue: Number(totalValue),
-          dueDay: Number(dueDay),
+          dueDay: dueDay ? Number(dueDay) : 0,
           dueMonth: type === "ONE_TIME" && dueMonth ? Number(dueMonth) : null,
           repeatsYearly: type === "ONE_TIME" ? repeatsYearly : false,
           recurringInterval: type === "RECURRING" ? Number(recurringInterval) : 1,
@@ -158,7 +158,7 @@ export default function GastosPage() {
         body: JSON.stringify({
           name: name.trim(),
           totalValue: Number(totalValue),
-          dueDay: Number(dueDay),
+          dueDay: dueDay ? Number(dueDay) : 0,
           dueMonth: type === "ONE_TIME" && dueMonth ? Number(dueMonth) : null,
           repeatsYearly: type === "ONE_TIME" ? repeatsYearly : false,
           recurringInterval: type === "RECURRING" ? Number(recurringInterval) : 1,
@@ -279,7 +279,7 @@ export default function GastosPage() {
           max="31"
           value={dueDay}
           onChange={(e) => setDueDay(e.target.value)}
-          required
+          placeholder="Opcional"
         />
         {type === "RECURRING" && (
           <Select
