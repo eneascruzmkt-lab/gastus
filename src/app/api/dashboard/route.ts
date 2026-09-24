@@ -2,9 +2,41 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { currentMonthBrazil } from "@/lib/date";
+import { currentMonthBrazil, billingMonth } from "@/lib/date";
 import { computeStatus, ExpenseStatus } from "@/lib/status";
 import { addMonths, subMonths, format } from "date-fns";
+
+/**
+ * Calcula o mês final efetivo de uma parcela.
+ * Se houve adiantamento, o fim é anterior ao original.
+ * Se não, retorna o fim original.
+ * Nunca altera totalInstallments.
+ */
+function getEffectiveEnd(
+  startDate: Date,
+  totalInstallments: number,
+  active: boolean,
+  remainingInstallments: number | null,
+  dueDay: number
+): string {
+  const originalEnd = format(
+    addMonths(startDate, totalInstallments - 1),
+    "yyyy-MM"
+  );
+
+  if (active && remainingInstallments != null && remainingInstallments > 0) {
+    const billing = billingMonth(dueDay);
+    const [by, bm] = billing.split("-").map(Number);
+    const effectiveEndDate = addMonths(new Date(by, bm - 1, 1), remainingInstallments - 1);
+    const effectiveEnd = format(effectiveEndDate, "yyyy-MM");
+    // Só usa o efetivo se for ANTERIOR ao original (houve adiantamento)
+    if (effectiveEnd < originalEnd) {
+      return effectiveEnd;
+    }
+  }
+
+  return originalEnd;
+}
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -64,9 +96,12 @@ export async function GET() {
       case "INSTALLMENT":
         if (expense.startDate && expense.totalInstallments) {
           const startMonth = format(expense.startDate, "yyyy-MM");
-          const endMonth = format(
-            addMonths(expense.startDate, expense.totalInstallments - 1),
-            "yyyy-MM"
+          const endMonth = getEffectiveEnd(
+            expense.startDate,
+            expense.totalInstallments,
+            expense.active,
+            expense.remainingInstallments,
+            expense.dueDay
           );
           if (refMonth >= startMonth && refMonth <= endMonth) {
             appearsThisMonth = true;
@@ -114,7 +149,15 @@ export async function GET() {
   let lastEndDate = new Date(refYear, 11, 1); // default: December of current year
   for (const expense of allExpenses) {
     if (expense.type === "INSTALLMENT" && expense.startDate && expense.totalInstallments) {
-      const endDate = addMonths(expense.startDate, expense.totalInstallments - 1);
+      const endStr = getEffectiveEnd(
+        expense.startDate,
+        expense.totalInstallments,
+        expense.active,
+        expense.remainingInstallments,
+        expense.dueDay
+      );
+      const [ey, em] = endStr.split("-").map(Number);
+      const endDate = new Date(ey, em - 1, 1);
       if (endDate > lastEndDate) lastEndDate = endDate;
     }
   }
@@ -148,9 +191,12 @@ export async function GET() {
         case "INSTALLMENT":
           if (expense.startDate && expense.totalInstallments) {
             const startMonth = format(expense.startDate, "yyyy-MM");
-            const endMonth = format(
-              addMonths(expense.startDate, expense.totalInstallments - 1),
-              "yyyy-MM"
+            const endMonth = getEffectiveEnd(
+              expense.startDate,
+              expense.totalInstallments,
+              expense.active,
+              expense.remainingInstallments,
+              expense.dueDay
             );
             if (projMonth >= startMonth && projMonth <= endMonth) {
               total += expense.installmentValue || expense.totalValue;
