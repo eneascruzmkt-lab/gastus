@@ -288,8 +288,8 @@ export default function ParcelasPage() {
       </div>
 
       {/* Filtros */}
-      <div className="flex gap-3 mb-4">
-        <div className="max-w-[200px]">
+      <div className="grid grid-cols-2 sm:flex gap-3 mb-4">
+        <div className="sm:w-[200px]">
           <Select
             label="Categoria"
             options={filterCategoryOptions}
@@ -297,7 +297,7 @@ export default function ParcelasPage() {
             onChange={(e) => setFilterCategory(e.target.value)}
           />
         </div>
-        <div className="max-w-[200px]">
+        <div className="sm:w-[200px]">
           <Select
             label="Status"
             options={filterStatusOptions}
@@ -445,7 +445,7 @@ export default function ParcelasPage() {
             placeholder="Ex: 290,74"
             required
           />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Parcela atual"
               type="number"
@@ -518,7 +518,7 @@ export default function ParcelasPage() {
             onChange={(e) => setEditName(e.target.value)}
             required
           />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Parcela atual"
               type="number"

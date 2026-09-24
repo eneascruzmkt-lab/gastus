@@ -380,8 +380,8 @@ export default function GastosPage() {
       </div>
 
       {/* Filtros */}
-      <div className="flex gap-3 mb-4">
-        <div className="max-w-[200px]">
+      <div className="grid grid-cols-2 sm:flex gap-3 mb-4">
+        <div className="sm:w-[200px]">
           <Select
             label="Tipo"
             options={filterTypeOptions}
@@ -389,7 +389,7 @@ export default function GastosPage() {
             onChange={(e) => setFilterType(e.target.value)}
           />
         </div>
-        <div className="max-w-[200px]">
+        <div className="sm:w-[200px]">
           <Select
             label="Pessoa"
             options={filterPersonOptions}
@@ -412,13 +412,13 @@ export default function GastosPage() {
             return (
               <div key={expense.id} className="relative">
                 <ExpenseCard expense={expense as any}>
-                  <div className="flex items-center gap-1">
+                  <div className="flex flex-wrap items-center gap-1">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.classes}`}>
                       {badge.label}
                     </span>
                     {expense.type === "RECURRING" && (expense.recurringInterval ?? 1) > 1 && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-status-pending/10 text-status-pending font-medium">
-                        A cada {expense.recurringInterval} meses
+                        A cada {expense.recurringInterval}m
                       </span>
                     )}
                     {expense.person && expense.person.name !== "Eu" && (

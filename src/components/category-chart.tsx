@@ -40,15 +40,15 @@ export function CategoryChart({ items }: CategoryChartProps) {
         Gastos por categoria
       </h2>
       <div className="flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-48 h-48 shrink-0">
+        <div className="w-36 h-36 sm:w-48 sm:h-48 shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={45}
-                outerRadius={80}
+                innerRadius={35}
+                outerRadius={60}
                 dataKey="value"
                 stroke="none"
               >

@@ -135,22 +135,26 @@ export default function DashboardPage() {
               .map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between gap-3 p-4 rounded-xl bg-gastus-light-card dark:bg-gastus-card border border-gastus-light-border dark:border-gastus-border"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-gastus-light-card dark:bg-gastus-card border border-gastus-light-border dark:border-gastus-border"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="font-medium text-gray-900 dark:text-gastus-text truncate">
+                  <div className="min-w-0">
+                    <span className="font-medium text-gray-900 dark:text-gastus-text truncate block">
                       {item.name}
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gastus-text-secondary">
-                      {item.value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gastus-text-secondary">
-                      Dia {item.dueDay}
-                    </span>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-sm text-gray-500 dark:text-gastus-text-secondary">
+                        {item.value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </span>
+                      {item.dueDay > 0 && (
+                        <span className="text-xs text-gray-500 dark:text-gastus-text-secondary">
+                          Dia {item.dueDay}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <Button
                     onClick={() => handlePay(item.id, item.value)}
-                    className="text-sm whitespace-nowrap shrink-0"
+                    className="text-sm whitespace-nowrap self-end sm:self-auto"
                   >
                     Pagar
                   </Button>
