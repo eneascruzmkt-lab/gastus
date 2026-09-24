@@ -7,6 +7,7 @@ import { ExpenseList } from "@/components/expense-list";
 import { EvolutionChart } from "@/components/evolution-chart";
 import { FreedomAlert } from "@/components/freedom-alert";
 import { CategoryChart } from "@/components/category-chart";
+import { PersonSummary } from "@/components/person-summary";
 import { Button } from "@/components/ui/button";
 
 interface DashboardItem {
@@ -26,6 +27,7 @@ interface DashboardData {
   freedomAlerts: { name: string; freedValue: number }[];
   selfDebtTotal: number;
   totalDebt: number;
+  perPerson: { name: string; total: number }[];
 }
 
 const monthNames = [
@@ -107,7 +109,10 @@ export default function DashboardPage() {
         totalDebt={data.totalDebt}
       />
 
-      <CategoryChart items={data.items} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CategoryChart items={data.items} />
+        <PersonSummary perPerson={data.perPerson} />
+      </div>
 
       <EvolutionChart projection={data.projection} />
 

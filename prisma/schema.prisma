@@ -26,8 +26,20 @@ model User {
 
   expenses           Expense[]
   categories         Category[]
+  persons            Person[]
 
   @@map("users")
+}
+
+model Person {
+  id        String    @id @default(cuid())
+  name      String
+  userId    String    @map("user_id")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenses  Expense[]
+
+  @@map("persons")
 }
 
 model Category {
@@ -46,6 +58,7 @@ model Expense {
   id                    String      @id @default(cuid())
   userId                String      @map("user_id")
   categoryId            String      @map("category_id")
+  personId              String?     @map("person_id")
   type                  ExpenseType
   name                  String
   note                  String?     @map("note")
@@ -57,11 +70,13 @@ model Expense {
   dueDay                Int         @map("due_day")
   dueMonth              Int?        @map("due_month")
   repeatsYearly         Boolean     @default(false) @map("repeats_yearly")
+  recurringInterval     Int         @default(1) @map("recurring_interval")
   active                Boolean     @default(true)
   createdAt             DateTime    @default(now()) @map("created_at")
 
   user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   category              Category    @relation(fields: [categoryId], references: [id])
+  person                Person?     @relation(fields: [personId], references: [id])
   payments              Payment[]
 
   @@map("expenses")

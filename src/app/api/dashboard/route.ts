@@ -50,7 +50,7 @@ export async function GET() {
   // Fetch all expenses (active + recently finished for freedom alerts)
   const allExpenses = await prisma.expense.findMany({
     where: { userId },
-    include: { category: true, payments: true },
+    include: { category: true, payments: true, person: true },
   });
 
   // Filter expenses that appear in the current billing month
@@ -81,10 +81,18 @@ export async function GET() {
     let value = 0;
 
     switch (expense.type) {
-      case "RECURRING":
-        appearsThisMonth = true;
-        value = expense.totalValue;
+      case "RECURRING": {
+        const interval = expense.recurringInterval || 1;
+        if (interval === 1) {
+          appearsThisMonth = true;
+        } else {
+          const createdMonth = expense.createdAt.getFullYear() * 12 + expense.createdAt.getMonth();
+          const currentMonth = refYear * 12 + (refMonthNum - 1);
+          appearsThisMonth = (currentMonth - createdMonth) % interval === 0;
+        }
+        if (appearsThisMonth) value = expense.totalValue;
         break;
+      }
 
       case "ONE_TIME":
         if (expense.dueMonth === refMonthNum) {
@@ -179,7 +187,18 @@ export async function GET() {
 
       switch (expense.type) {
         case "RECURRING":
-          if (expense.active) total += expense.totalValue;
+          if (expense.active) {
+            const interval = expense.recurringInterval || 1;
+            if (interval === 1) {
+              total += expense.totalValue;
+            } else {
+              const createdMonth = expense.createdAt.getFullYear() * 12 + expense.createdAt.getMonth();
+              const pMonth = projDate.getFullYear() * 12 + projDate.getMonth();
+              if ((pMonth - createdMonth) % interval === 0) {
+                total += expense.totalValue;
+              }
+            }
+          }
           break;
 
         case "ONE_TIME":
@@ -264,6 +283,20 @@ export async function GET() {
     return sum + (debt.totalValue - paid);
   }, 0);
 
+  // Per-person summary (only RECURRING and ONE_TIME, active)
+  const personTotals = new Map<string, { name: string; total: number }>();
+  for (const expense of allExpenses) {
+    if (!expense.active) continue;
+    if (expense.type !== "RECURRING" && expense.type !== "ONE_TIME") continue;
+    if (expense.category.name === "Terceiro") continue;
+
+    const personName = expense.person?.name ?? "Eu";
+    const current = personTotals.get(personName) || { name: personName, total: 0 };
+    current.total += expense.totalValue;
+    personTotals.set(personName, current);
+  }
+  const perPerson = Array.from(personTotals.values()).sort((a, b) => b.total - a.total);
+
   return NextResponse.json({
     refMonth,
     items,
@@ -272,5 +305,6 @@ export async function GET() {
     freedomAlerts,
     selfDebtTotal,
     totalDebt,
+    perPerson,
   });
 }

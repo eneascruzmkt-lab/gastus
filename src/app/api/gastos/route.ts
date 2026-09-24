@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 
   const expenses = await prisma.expense.findMany({
     where,
-    include: { category: true, payments: true },
+    include: { category: true, payments: true, person: true },
     orderBy: { createdAt: "desc" },
   });
 
@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       data: {
         userId,
         categoryId: body.categoryId,
+        personId: body.personId || null,
         type: body.type,
         name: body.name,
         note: body.note || null,
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
         dueDay: body.dueDay ?? 0,
         dueMonth: body.dueMonth || null,
         repeatsYearly: body.repeatsYearly || false,
+        recurringInterval: body.recurringInterval || 1,
       },
       include: { category: true },
     });

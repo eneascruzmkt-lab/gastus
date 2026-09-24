@@ -27,6 +27,7 @@ export async function PUT(
     data: {
       name: body.name ?? expense.name,
       categoryId: body.categoryId ?? expense.categoryId,
+      personId: body.personId !== undefined ? (body.personId || null) : expense.personId,
       totalValue: body.totalValue ?? expense.totalValue,
       installmentValue: body.installmentValue ?? expense.installmentValue,
       totalInstallments: body.totalInstallments ?? expense.totalInstallments,
@@ -35,6 +36,7 @@ export async function PUT(
       dueDay: body.dueDay ?? expense.dueDay,
       dueMonth: body.dueMonth ?? expense.dueMonth,
       repeatsYearly: body.repeatsYearly ?? expense.repeatsYearly,
+      recurringInterval: body.recurringInterval ?? expense.recurringInterval,
       active: body.active ?? expense.active,
     },
     include: { category: true },
