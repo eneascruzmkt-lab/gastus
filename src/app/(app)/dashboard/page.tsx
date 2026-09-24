@@ -28,7 +28,7 @@ interface DashboardData {
   freedomAlerts: { name: string; freedValue: number }[];
   selfDebtTotal: number;
   totalDebt: number;
-  perPerson: { name: string; total: number }[];
+  perPerson: { name: string; total: number; income: number }[];
 }
 
 const monthNames = [

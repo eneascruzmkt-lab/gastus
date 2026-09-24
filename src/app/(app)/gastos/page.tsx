@@ -87,6 +87,7 @@ export default function GastosPage() {
 
   // Person form
   const [newPersonName, setNewPersonName] = useState("");
+  const [newPersonIncome, setNewPersonIncome] = useState("");
 
   function resetForm() {
     setType("RECURRING");
@@ -199,11 +200,11 @@ export default function GastosPage() {
       await fetch("/api/pessoas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newPersonName.trim() }),
+        body: JSON.stringify({ name: newPersonName.trim(), income: Number(newPersonIncome) || 0 }),
       });
       setNewPersonName("");
+      setNewPersonIncome("");
       setPersonModalOpen(false);
-      // Revalidar a lista de pessoas
       window.location.reload();
     } finally {
       setSubmitting(false);
@@ -540,6 +541,15 @@ export default function GastosPage() {
             onChange={(e) => setNewPersonName(e.target.value)}
             placeholder="Ex: Esposa"
             required
+          />
+          <Input
+            label="Renda mensal"
+            type="number"
+            step="0.01"
+            min="0"
+            value={newPersonIncome}
+            onChange={(e) => setNewPersonIncome(e.target.value)}
+            placeholder="Ex: 3000"
           />
           <div className="flex justify-end gap-3">
             <Button type="button" variant="secondary" onClick={() => setPersonModalOpen(false)}>

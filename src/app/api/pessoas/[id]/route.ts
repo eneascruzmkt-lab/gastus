@@ -15,12 +15,15 @@ export async function PUT(
   const person = await prisma.person.findFirst({ where: { id, userId } });
   if (!person) return NextResponse.json({ error: "Pessoa não encontrada" }, { status: 404 });
 
-  const { name } = await request.json();
-  if (!name?.trim()) return NextResponse.json({ error: "Nome é obrigatório" }, { status: 400 });
+  const body = await request.json();
+  if (!body.name?.trim()) return NextResponse.json({ error: "Nome é obrigatório" }, { status: 400 });
 
   const updated = await prisma.person.update({
     where: { id },
-    data: { name: name.trim() },
+    data: {
+      name: body.name.trim(),
+      income: body.income !== undefined ? body.income : person.income,
+    },
   });
 
   return NextResponse.json(updated);

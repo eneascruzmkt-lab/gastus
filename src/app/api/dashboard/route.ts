@@ -294,18 +294,27 @@ export async function GET() {
   }, 0);
 
   // Per-person summary (only RECURRING and ONE_TIME, active)
-  const personTotals = new Map<string, { name: string; total: number }>();
+  const persons = await prisma.person.findMany({ where: { userId } });
+  const personTotals = new Map<string, { name: string; total: number; income: number }>();
+
+  // Inicializar com todas as pessoas (mesmo sem gastos)
+  for (const p of persons) {
+    personTotals.set(p.name, { name: p.name, total: 0, income: p.income });
+  }
+
   for (const expense of allExpenses) {
     if (!expense.active) continue;
     if (expense.type !== "RECURRING" && expense.type !== "ONE_TIME") continue;
     if (expense.category.name === "Terceiro") continue;
 
     const personName = expense.person?.name ?? "Eu";
-    const current = personTotals.get(personName) || { name: personName, total: 0 };
+    const current = personTotals.get(personName) || { name: personName, total: 0, income: 0 };
     current.total += expense.totalValue;
     personTotals.set(personName, current);
   }
-  const perPerson = Array.from(personTotals.values()).sort((a, b) => b.total - a.total);
+  const perPerson = Array.from(personTotals.values())
+    .filter((p) => p.total > 0 || p.income > 0)
+    .sort((a, b) => b.total - a.total);
 
   return NextResponse.json({
     refMonth,

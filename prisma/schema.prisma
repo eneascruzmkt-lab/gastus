@@ -34,6 +34,7 @@ model User {
 model Person {
   id        String    @id @default(cuid())
   name      String
+  income    Float     @default(0)
   userId    String    @map("user_id")
 
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)

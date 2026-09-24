@@ -21,14 +21,14 @@ export async function POST(request: Request) {
   if (!session?.user) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   const userId = (session.user as any).id;
 
-  const { name } = await request.json();
+  const { name, income } = await request.json();
 
   if (!name?.trim()) {
     return NextResponse.json({ error: "Nome é obrigatório" }, { status: 400 });
   }
 
   const person = await prisma.person.create({
-    data: { name: name.trim(), userId },
+    data: { name: name.trim(), income: income || 0, userId },
   });
 
   return NextResponse.json(person);

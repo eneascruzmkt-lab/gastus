@@ -1,7 +1,7 @@
 "use client";
 
 interface PersonSummaryProps {
-  perPerson: { name: string; total: number }[];
+  perPerson: { name: string; total: number; income: number }[];
 }
 
 function formatBRL(value: number): string {
@@ -11,39 +11,76 @@ function formatBRL(value: number): string {
   });
 }
 
+function getBarColor(pct: number): string {
+  if (pct >= 80) return "bg-status-danger";
+  if (pct >= 60) return "bg-status-pending";
+  return "bg-status-success";
+}
+
+function getTextColor(pct: number): string {
+  if (pct >= 80) return "text-status-danger";
+  if (pct >= 60) return "text-status-pending";
+  return "text-status-success";
+}
+
 export function PersonSummary({ perPerson }: PersonSummaryProps) {
   if (perPerson.length === 0) return null;
-
-  const total = perPerson.reduce((sum, p) => sum + p.total, 0);
 
   return (
     <div className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gastus-text mb-4">
         Gastos por pessoa
       </h2>
-      <div className="space-y-3">
+      <div className="space-y-5">
         {perPerson.map((person) => {
-          const pct = total > 0 ? ((person.total / total) * 100).toFixed(0) : "0";
+          const pct = person.income > 0
+            ? Math.min(Math.round((person.total / person.income) * 100), 100)
+            : 0;
+          const libre = person.income - person.total;
+
           return (
-            <div key={person.name} className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-full bg-veridian-100 dark:bg-veridian-900/30 flex items-center justify-center shrink-0">
-                  <span className="text-xs font-bold text-veridian-700 dark:text-veridian-400">
-                    {person.name.charAt(0).toUpperCase()}
+            <div key={person.name}>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-veridian-100 dark:bg-veridian-900/30 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-veridian-700 dark:text-veridian-400">
+                      {person.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-gastus-text">
+                    {person.name}
                   </span>
                 </div>
-                <span className="text-sm text-gray-700 dark:text-gastus-text-secondary truncate">
-                  {person.name}
-                </span>
+                <div className="text-right">
+                  <span className="text-sm font-medium text-gray-900 dark:text-gastus-text">
+                    {formatBRL(person.total)}
+                  </span>
+                  {person.income > 0 && (
+                    <span className="text-xs text-gray-500 dark:text-gastus-text-secondary ml-1">
+                      de {formatBRL(person.income)}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-sm font-medium text-gray-900 dark:text-gastus-text">
-                  {formatBRL(person.total)}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gastus-text-secondary w-8 text-right">
-                  {pct}%
-                </span>
-              </div>
+
+              {person.income > 0 && (
+                <>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-2">
+                    <div
+                      className={`h-2.5 rounded-full transition-all ${getBarColor(pct)}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className={`text-xs font-medium ${getTextColor(pct)}`}>
+                      {pct}% comprometido
+                    </span>
+                    <span className={`text-xs ${libre >= 0 ? "text-gray-500 dark:text-gastus-text-secondary" : "text-status-danger font-medium"}`}>
+                      {libre >= 0 ? `Sobra ${formatBRL(libre)}` : `Excede ${formatBRL(Math.abs(libre))}`}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           );
         })}
