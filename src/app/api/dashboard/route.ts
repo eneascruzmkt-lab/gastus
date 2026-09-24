@@ -144,12 +144,17 @@ export async function GET() {
   // Sort by dueDay ascending
   items.sort((a, b) => a.dueDay - b.dueDay);
 
-  // Summary
+  // Summary — separar parcelas de gastos recorrentes/fixos
+  const installmentItems = items.filter((i) => i.type === "INSTALLMENT");
+  const fixedItems = items.filter((i) => i.type === "RECURRING" || i.type === "ONE_TIME");
+
   const totalToPay = items.reduce((sum, i) => sum + i.value, 0);
-  const totalPaid = items
+  const installmentTotal = installmentItems.reduce((sum, i) => sum + i.value, 0);
+  const fixedTotal = fixedItems.reduce((sum, i) => sum + i.value, 0);
+  const totalPaid = installmentItems
     .filter((i) => i.status === "pago")
     .reduce((sum, i) => sum + i.value, 0);
-  const dueCount = items.filter(
+  const dueCount = installmentItems.filter(
     (i) => i.status === "pendente" || i.status === "atrasado"
   ).length;
 
@@ -173,12 +178,13 @@ export async function GET() {
   const projStartDate = new Date(refYear, 0, 1); // January of current year
   const totalProjMonths = (lastEndDate.getFullYear() - refYear) * 12 + lastEndDate.getMonth() + 1;
 
-  const projection: { month: string; total: number }[] = [];
+  const projection: { month: string; parcelas: number; byPerson: Record<string, number> }[] = [];
   for (let offset = 0; offset < totalProjMonths; offset++) {
     const projDate = addMonths(projStartDate, offset);
     const projMonth = format(projDate, "yyyy-MM");
     const projMonthNum = projDate.getMonth() + 1;
-    let total = 0;
+    let parcelas = 0;
+    const byPerson: Record<string, number> = {};
 
     for (const expense of allExpenses) {
       if (!expense.active && expense.type !== "INSTALLMENT") continue;
@@ -189,21 +195,25 @@ export async function GET() {
         case "RECURRING":
           if (expense.active) {
             const interval = expense.recurringInterval || 1;
+            let appearsThisMonth = false;
             if (interval === 1) {
-              total += expense.totalValue;
+              appearsThisMonth = true;
             } else {
               const createdMonth = expense.createdAt.getFullYear() * 12 + expense.createdAt.getMonth();
               const pMonth = projDate.getFullYear() * 12 + projDate.getMonth();
-              if ((pMonth - createdMonth) % interval === 0) {
-                total += expense.totalValue;
-              }
+              appearsThisMonth = (pMonth - createdMonth) % interval === 0;
+            }
+            if (appearsThisMonth) {
+              const personName = expense.person?.name ?? "Eu";
+              byPerson[personName] = (byPerson[personName] || 0) + expense.totalValue;
             }
           }
           break;
 
         case "ONE_TIME":
           if (expense.active && expense.dueMonth === projMonthNum) {
-            total += expense.totalValue;
+            const personName = expense.person?.name ?? "Eu";
+            byPerson[personName] = (byPerson[personName] || 0) + expense.totalValue;
           }
           break;
 
@@ -218,14 +228,14 @@ export async function GET() {
               expense.dueDay
             );
             if (projMonth >= startMonth && projMonth <= endMonth) {
-              total += expense.installmentValue || expense.totalValue;
+              parcelas += expense.installmentValue || expense.totalValue;
             }
           }
           break;
       }
     }
 
-    projection.push({ month: projMonth, total });
+    projection.push({ month: projMonth, parcelas, byPerson });
   }
 
   // Freedom alerts: installments that were finalized last month
@@ -300,7 +310,7 @@ export async function GET() {
   return NextResponse.json({
     refMonth,
     items,
-    summary: { totalToPay, totalPaid, dueCount },
+    summary: { totalToPay, totalPaid, dueCount, installmentTotal, fixedTotal },
     projection,
     freedomAlerts,
     selfDebtTotal,

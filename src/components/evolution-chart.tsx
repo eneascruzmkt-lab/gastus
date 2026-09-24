@@ -10,8 +10,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+interface ProjectionItem {
+  month: string;
+  parcelas: number;
+}
+
 interface EvolutionChartProps {
-  projection: { month: string; total: number }[];
+  projection: ProjectionItem[];
 }
 
 function formatMonth(month: string): string {
@@ -35,13 +40,13 @@ export function EvolutionChart({ projection }: EvolutionChartProps) {
 
   const data = projection.map((p) => ({
     month: formatMonth(p.month),
-    total: p.total,
+    total: p.parcelas,
   }));
 
   return (
     <div className="bg-gastus-light-card dark:bg-gastus-card rounded-xl shadow-sm p-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gastus-text mb-4">
-        Projeção de gastos
+        Projeção de parcelas
       </h2>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={data}>
@@ -54,10 +59,10 @@ export function EvolutionChart({ projection }: EvolutionChartProps) {
           <YAxis
             tick={{ fill: "#9CA3AF", fontSize: 12 }}
             axisLine={{ stroke: "#4B5563" }}
-            tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`}
+            tickFormatter={(v) => `R$ ${(v / 1000).toFixed(1)}k`}
           />
           <Tooltip
-            formatter={(value) => [formatBRL(Number(value) || 0), "Total"]}
+            formatter={(value) => [formatBRL(Number(value) || 0), "Parcelas"]}
             contentStyle={{
               backgroundColor: "#1F2937",
               border: "1px solid #374151",

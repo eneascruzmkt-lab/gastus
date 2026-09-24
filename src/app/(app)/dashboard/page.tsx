@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 interface DashboardItem {
   id: string;
   name: string;
+  type: string;
   value: number;
   dueDay: number;
   category: { id: string; name: string };
@@ -22,8 +23,8 @@ interface DashboardItem {
 interface DashboardData {
   refMonth: string;
   items: DashboardItem[];
-  summary: { totalToPay: number; totalPaid: number; dueCount: number };
-  projection: { month: string; total: number }[];
+  summary: { totalToPay: number; totalPaid: number; dueCount: number; installmentTotal: number; fixedTotal: number };
+  projection: { month: string; parcelas: number; byPerson: Record<string, number> }[];
   freedomAlerts: { name: string; freedValue: number }[];
   selfDebtTotal: number;
   totalDebt: number;
@@ -103,6 +104,8 @@ export default function DashboardPage() {
 
       <SummaryCards
         totalToPay={data.summary.totalToPay}
+        installmentTotal={data.summary.installmentTotal}
+        fixedTotal={data.summary.fixedTotal}
         totalPaid={data.summary.totalPaid}
         dueCount={data.summary.dueCount}
         selfDebtTotal={data.selfDebtTotal}
@@ -110,25 +113,25 @@ export default function DashboardPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CategoryChart items={data.items} />
+        <CategoryChart items={data.items.filter((i) => i.type === "INSTALLMENT")} />
         <PersonSummary perPerson={data.perPerson} />
       </div>
 
       <EvolutionChart projection={data.projection} />
 
       <ExpenseList
-        items={data.items}
+        items={data.items.filter((i) => i.type === "INSTALLMENT")}
         categories={categories}
       />
 
-      {data.items.some((i) => i.status !== "pago") && (
+      {data.items.filter((i) => i.type === "INSTALLMENT").some((i) => i.status !== "pago") && (
         <div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gastus-text mb-3">
             Marcar como pago
           </h2>
           <div className="grid gap-3">
             {data.items
-              .filter((i) => i.status !== "pago")
+              .filter((i) => i.type === "INSTALLMENT" && i.status !== "pago")
               .map((item) => (
                 <div
                   key={item.id}
